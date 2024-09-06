@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "765576879712",
+    "project_id": "studybean-a8a9b",
+    "storage_bucket": "studybean-a8a9b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:765576879712:android:db59cc9d9ccdcbf6c72d05",
+        "android_client_info": {
+          "package_name": "com.studybean.studybean"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGQQxlnUYiXTB6hoV1COAkUOozo22y-1E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
