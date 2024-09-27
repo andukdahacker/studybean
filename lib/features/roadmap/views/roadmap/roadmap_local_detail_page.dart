@@ -8,8 +8,9 @@ import 'package:studybean/features/roadmap/models/create_milestone_input.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/add_milestone_cubit/add_local_milestone_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/get_roadmap_detail_cubit/get_local_roadmap_detail_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/widgets/milestone_dot_widget.dart';
-import 'package:studybean/features/roadmap/views/roadmap/widgets/milestone_local_widget.dart';
 import 'package:studybean/features/splash/loading_page.dart';
+
+import 'widgets/milestone_widget.dart';
 
 class RoadmapLocalDetailPage extends StatefulWidget {
   const RoadmapLocalDetailPage({super.key, required this.id});
@@ -260,7 +261,7 @@ class _RoadmapLocalDetailPageState extends State<RoadmapLocalDetailPage> {
                                       child: Padding(
                                         padding:
                                             const EdgeInsets.only(bottom: 16.0),
-                                        child: MilestoneLocalWidget(
+                                        child: MilestoneWidget(
                                           onTap: () async {
                                             final shouldReload = await context.push<bool>(
                                                 '/local/home/roadmap/${milestone.roadmapId}/milestone/${milestone.id}');

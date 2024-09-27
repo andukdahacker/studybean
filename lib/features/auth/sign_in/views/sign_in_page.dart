@@ -142,11 +142,16 @@ class _SignInPageState extends State<SignInPage> {
                   const SizedBox(
                     height: 16,
                   ),
-                  Text(
-                    'Forgot Password?',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        decoration: TextDecoration.underline,
-                        color: context.theme.primaryColor),
+                  GestureDetector(
+                    onTap: () {
+                      context.push('/forgotPassword');
+                    },
+                    child: Text(
+                      'Forgot Password?',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          decoration: TextDecoration.underline,
+                          color: context.theme.primaryColor),
+                    ),
                   ),
                   const SizedBox(
                     height: 16,
@@ -155,6 +160,7 @@ class _SignInPageState extends State<SignInPage> {
                     listener: (context, state) async {
                       switch (state) {
                         case SignInInitial():
+                          break;
                         case SignInLoading():
                           break;
                         case SignInFirebaseSuccess():
@@ -178,7 +184,7 @@ class _SignInPageState extends State<SignInPage> {
                           break;
                         case SignInSuccess():
                           await context.read<AuthCubit>().checkAuth();
-                          if(context.mounted) {
+                          if (context.mounted) {
                             context.go('/home');
                           }
                           break;
@@ -186,14 +192,17 @@ class _SignInPageState extends State<SignInPage> {
                           context.showErrorDialog(
                             title: 'Sign In Error',
                             message: state.message,
-                            onRetry: () => context
+                            onRetry: () {
+                              context.pop();
+                              context
                                 .read<SignInCubit>()
                                 .firebaseSignInWithEmail(
                                   SignInInput(
                                     email: _emailController.text,
                                     password: _passwordController.text,
                                   ),
-                                ),
+                                );
+                            },
                           );
                           break;
                       }
@@ -210,7 +219,9 @@ class _SignInPageState extends State<SignInPage> {
                           }
                         },
                         child: (state is SignInLoading)
-                            ? const CircularProgressIndicator()
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
                             : const Text('Sign In'),
                       );
                     },
@@ -218,24 +229,24 @@ class _SignInPageState extends State<SignInPage> {
                   const SizedBox(
                     height: 16,
                   ),
-                  Text(
-                    'Or',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: const Text('Sign In with Google'),
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: const Text('Sign In with Apple'),
-                  ),
+                  // Text(
+                  //   'Or',
+                  //   style: Theme.of(context).textTheme.bodyMedium,
+                  // ),
+                  // const SizedBox(
+                  //   height: 16,
+                  // ),
+                  // ElevatedButton(
+                  //   onPressed: () {},
+                  //   child: const Text('Sign In with Google'),
+                  // ),
+                  // const SizedBox(
+                  //   height: 16,
+                  // ),
+                  // ElevatedButton(
+                  //   onPressed: () {},
+                  //   child: const Text('Sign In with Apple'),
+                  // ),
                   const SizedBox(
                     height: 32,
                   ),

@@ -6,8 +6,8 @@ import 'package:studybean/common/extensions/context_theme.dart';
 import 'package:studybean/features/roadmap/models/roadmap.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class LocalActionResourceWidget extends StatelessWidget {
-  const LocalActionResourceWidget(
+class ActionResourceWidget extends StatelessWidget {
+  const ActionResourceWidget(
       {super.key, required this.resource, required this.onEditResource, required this.onDeleteResource});
 
   final ActionResource resource;

@@ -17,6 +17,10 @@ class SharedPreferenceService {
     await pref.setString('token', token);
   }
 
+  Future<void> removeToken() async {
+    await pref.remove('token');
+  }
+
   String getToken() {
     return pref.getString('token') ?? '';
   }

@@ -6,9 +6,9 @@ import 'package:studybean/common/di/get_it.dart';
 import 'package:studybean/common/extensions/context_dialog_extension.dart';
 import 'package:studybean/common/extensions/context_theme.dart';
 import 'package:studybean/features/roadmap/models/create_local_action_resource_input.dart';
-import 'package:studybean/features/roadmap/views/roadmap/bloc/create_action_resource_cubit/create_action_resource_cubit.dart';
 
 import '../../../../../common/widgets/bottom_sheet_header_widget.dart';
+import '../bloc/create_action_resource_cubit/create_local_action_resource_cubit.dart';
 
 class CreateLocalActionResourceWidget extends StatefulWidget {
   const CreateLocalActionResourceWidget({super.key, required this.actionId});

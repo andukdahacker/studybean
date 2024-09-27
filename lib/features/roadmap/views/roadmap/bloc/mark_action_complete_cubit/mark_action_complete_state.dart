@@ -13,8 +13,12 @@ class MarkActionCompleteLoading extends MarkActionCompleteState {
 }
 
 class MarkActionCompleteSuccess extends MarkActionCompleteState {
+  final MilestoneAction action;
+
+  MarkActionCompleteSuccess(this.action);
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [action];
 }
 
 class MarkActionCompleteFailure extends MarkActionCompleteState {

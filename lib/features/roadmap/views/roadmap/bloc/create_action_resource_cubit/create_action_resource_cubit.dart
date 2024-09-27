@@ -1,25 +1,25 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studybean/features/roadmap/models/create_local_action_resource_input.dart';
-import 'package:studybean/features/roadmap/models/roadmap.dart';
 
-import '../../../../repositories/roadmap_local_repository.dart';
+import '../../../../models/create_action_resource_input.dart';
+import '../../../../models/roadmap.dart';
+import '../../../../repositories/roadmap_repository.dart';
 
 part 'create_action_resource_state.dart';
 
-class CreateLocalActionResourceCubit extends Cubit<CreateLocalActionResourceState> {
-  CreateLocalActionResourceCubit(this._roadmapLocalRepository) : super(CreateLocalActionResourceInitial());
+class CreateActionResourceCubit extends Cubit<CreateActionResourceState> {
+  CreateActionResourceCubit(this._roadmapRepository) : super(CreateActionResourceInitial());
 
-  final RoadmapLocalRepository _roadmapLocalRepository;
+  final RoadmapRepository _roadmapRepository;
 
-  Future<void> createResource(CreateLocalActionResourceInput input) async {
+  Future<void> createResource(CreateActionResourceInput input) async {
     try {
-      emit(CreateLocalActionResourceLoading());
-      final resource = await _roadmapLocalRepository.createActionResource(input);
-      emit(CreateLocalActionResourceSuccess(resource: resource));
+      emit(CreateActionResourceLoading());
+      final resource = await _roadmapRepository.createActionResource(input);
+      emit(CreateActionResourceSuccess(resource: resource));
     } catch(e, stackTrace) {
       addError(e, stackTrace);
-      emit(CreateLocalActionResourceError());
+      emit(CreateActionResourceError(error: e));
     }
   }
 }

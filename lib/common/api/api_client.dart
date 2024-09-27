@@ -73,9 +73,9 @@ class APIClient {
 
       httpLogger.info('Request body: $encodedBody');
 
-      final decoded = jsonDecode(response.body);
-
       httpLogger.info('Response: ${response.body}');
+
+      final decoded = jsonDecode(response.body);
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return CommonResponse(

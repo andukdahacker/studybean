@@ -120,11 +120,14 @@ extension ContextDialogExtension on BuildContext {
   void showLoading() {
     showDialog(
       context: this,
-      builder: (context) => const Dialog.fullscreen(
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(color: Colors.white,),
       ),
     );
+  }
+
+  void hideLoading() {
+    Navigator.pop(this);
   }
 }

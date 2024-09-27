@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:studybean/common/extensions/context_theme.dart';
 
 import '../../../models/roadmap.dart';
 
 class RoadmapWidget extends StatefulWidget {
-  const RoadmapWidget({super.key, required this.roadmap});
+  const RoadmapWidget({super.key, required this.roadmap, required this.onTap});
 
   final Roadmap roadmap;
+  final VoidCallback onTap;
 
   @override
   State<RoadmapWidget> createState() => _RoadmapWidgetState();
@@ -17,13 +17,18 @@ class _RoadmapWidgetState extends State<RoadmapWidget> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        context.push('/home/roadmap/${widget.roadmap.id}');
-      },
+      onTap: widget.onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
+          color: context.theme.colorScheme.primaryContainer,
+          boxShadow: [
+            BoxShadow(
+              color: context.theme.shadowColor,
+              offset: const Offset(0, 2),
+              blurRadius: 4,
+            ),
+          ],
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),

@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studybean/common/extensions/context_dialog_extension.dart';
 import 'package:studybean/common/extensions/context_theme.dart';
-import 'package:studybean/features/roadmap/views/roadmap/widgets/roadmap_local_widget.dart';
 
 import '../../../../../common/di/get_it.dart';
 import 'bloc/get_roadmap_cubit/get_local_roadmap_cubit.dart';
+import 'widgets/roadmap_widget.dart';
 
 class RoadmapLocalPage extends StatelessWidget {
   const RoadmapLocalPage({super.key});
@@ -187,7 +187,9 @@ class RoadmapLocalPage extends StatelessWidget {
                         },
                         itemBuilder: (context, index) {
                           final roadmap = state.roadmaps[index];
-                          return RoadmapLocalWidget(roadmap: roadmap);
+                          return RoadmapWidget(roadmap: roadmap, onTap: () {
+                            context.push('/local/home/roadmap/${roadmap.id}');
+                          });
                         },
                       ),
                     ),

@@ -1,26 +1,29 @@
 part of 'create_action_resource_cubit.dart';
 
-sealed class CreateLocalActionResourceState extends Equatable {}
+sealed class CreateActionResourceState extends Equatable {}
 
-class CreateLocalActionResourceInitial extends CreateLocalActionResourceState {
+class CreateActionResourceInitial extends CreateActionResourceState {
   @override
   List<Object?> get props => [];
 }
 
-class CreateLocalActionResourceLoading extends CreateLocalActionResourceState {
+class CreateActionResourceLoading extends CreateActionResourceState {
   @override
   List<Object?> get props => [];
 }
 
-class CreateLocalActionResourceSuccess extends CreateLocalActionResourceState {
+class CreateActionResourceSuccess extends CreateActionResourceState {
   final ActionResource resource;
 
-  CreateLocalActionResourceSuccess({required this.resource});
+  CreateActionResourceSuccess({required this.resource});
   @override
   List<Object?> get props => [resource];
 }
 
-class CreateLocalActionResourceError extends CreateLocalActionResourceState {
+class CreateActionResourceError extends CreateActionResourceState {
+  final Object error;
+
+  CreateActionResourceError({required this.error});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [error];
 }

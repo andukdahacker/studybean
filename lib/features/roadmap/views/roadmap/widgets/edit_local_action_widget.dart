@@ -7,9 +7,9 @@ import 'package:studybean/common/extensions/context_theme.dart';
 import 'package:studybean/features/roadmap/models/duration_unit.dart';
 import 'package:studybean/features/roadmap/models/edit_local_action_input.dart';
 import 'package:studybean/features/roadmap/models/roadmap.dart';
-import 'package:studybean/features/roadmap/views/roadmap/bloc/edit_local_action_cubit/edit_local_action_cubit.dart';
 
 import '../../../../../common/widgets/bottom_sheet_header_widget.dart';
+import '../bloc/edit_action_cubit/edit_local_action_cubit.dart';
 
 class EditLocalActionWidget extends StatefulWidget {
   const EditLocalActionWidget({super.key, required this.action});

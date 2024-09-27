@@ -15,7 +15,7 @@ import '../../../splash/error_page.dart';
 import '../../../splash/loading_page.dart';
 import 'bloc/delete_action_cubit/delete_local_action_cubit.dart';
 import 'widgets/create_local_action_resource_widget.dart';
-import 'widgets/local_action_resource_widget.dart';
+import 'widgets/action_resource_widget.dart';
 
 class ActionLocalPage extends StatefulWidget {
   const ActionLocalPage({super.key, required this.actionId});
@@ -319,7 +319,7 @@ class _ActionLocalPageState extends State<ActionLocalPage> {
                                   itemBuilder: (context, index) {
                                     final resource = getLocalActionState
                                         .action.resource![index];
-                                    return LocalActionResourceWidget(
+                                    return ActionResourceWidget(
                                       resource: resource,
                                       onEditResource: () async {
                                         final updatedResource = await context

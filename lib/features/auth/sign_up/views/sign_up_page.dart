@@ -250,20 +250,20 @@ class _SignUpPageState extends State<SignUpPage> {
                               )
                             : const Text('Sign up'),
                       ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Text(
-                        'Or',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      ElevatedButton(
-                        onPressed: () {},
-                        child: const Text('Sign up with Google'),
-                      ),
+                      // const SizedBox(
+                      //   height: 16,
+                      // ),
+                      // Text(
+                      //   'Or',
+                      //   style: Theme.of(context).textTheme.bodyMedium,
+                      // ),
+                      // const SizedBox(
+                      //   height: 8,
+                      // ),
+                      // ElevatedButton(
+                      //   onPressed: () {},
+                      //   child: const Text('Sign up with Google'),
+                      // ),
                       const SizedBox(
                         height: 16,
                       ),

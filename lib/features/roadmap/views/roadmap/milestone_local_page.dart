@@ -8,10 +8,10 @@ import 'package:studybean/features/roadmap/models/roadmap.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_milestone_cubit/delete_local_milestone_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/get_milestone_cubit/get_local_milestone_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/mark_action_complete_cubit/mark_local_action_complete_cubit.dart';
-import 'package:studybean/features/roadmap/views/roadmap/widgets/action_local_widget.dart';
 import 'package:studybean/features/splash/error_page.dart';
 import 'package:studybean/features/splash/loading_page.dart';
 
+import 'widgets/action_widget.dart';
 import 'widgets/edit_local_milestone_widget.dart';
 
 class MilestoneLocalPage extends StatefulWidget {
@@ -226,7 +226,7 @@ class _MilestoneLocalPageState extends State<MilestoneLocalPage> {
                                     },
                                     builder: (markLocalActionCompleteContext,
                                             markLocalActionCompleteState) =>
-                                        ActionLocalWidget(
+                                        ActionWidget(
                                       action: action,
                                       onTap: () async {
                                         await context.pushNamed(

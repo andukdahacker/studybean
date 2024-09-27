@@ -27,4 +27,8 @@ class AuthLocalRepository {
           user.updatedAt.toIso8601String()
         ]);
   }
+
+  Future<void> removeUser() async {
+    await _db.instance.rawDelete('DELETE FROM user');
+  }
 }

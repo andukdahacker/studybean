@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:studybean/common/di/get_it.dart';
+import 'package:studybean/common/extensions/context_dialog_extension.dart';
 import 'package:studybean/features/roadmap/models/duration_unit.dart';
+import 'package:studybean/features/roadmap/views/create_roadmap/bloc/create_roadmap_cubit/create_roadmap_cubit.dart';
+import 'package:studybean/features/roadmap/views/create_roadmap/bloc/create_roadmap_cubit/create_roadmap_with_ai_cubit.dart';
 import 'package:studybean/features/roadmap/views/create_roadmap/widgets/choose_create_roadmap_method.dart';
 import 'package:studybean/features/roadmap/views/create_roadmap/widgets/choose_goals_duration_widget.dart';
 import 'package:studybean/features/roadmap/views/create_roadmap/widgets/choose_subject_widget.dart';
+
+import '../../models/create_roadmap_input.dart';
 
 class CreateRoadmapPage extends StatefulWidget {
   const CreateRoadmapPage({super.key});
@@ -34,89 +42,199 @@ class _CreateRoadmapPageState extends State<CreateRoadmapPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          'Create Roadmap',
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => getIt<CreateRoadmapCubit>(),
         ),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            LinearProgressIndicator(
-              value: _progress,
-            ),
-            Expanded(
-              child: PageView(
-                controller: _pageController,
-                physics: const NeverScrollableScrollPhysics(),
-                onPageChanged: (index) {
-                  setState(() {
-                    _progress = (index + 1) / 3.0;
-                  });
-                },
-                children: [
-                  ChooseSubjectWidget(
-                    selectedSubjectName: _subject,
-                    onNext: (subject) {
-                      _pageController.nextPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
-                    },
-                  ),
-                  ChooseGoalsDurationWidget(
-                    subjectName: _subject,
-                    onNext: () {
-                      _pageController.nextPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
-                    },
-                    onBack: () {
-                      _pageController.previousPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
-                    },
-                    onGoalChanged: (goal) {
-                      setState(() {
-                        _goal = goal;
-                      });
-                    },
-                    onDurationChanged: (duration, unit) {
-                      setState(() {
-                        _goalDuration = duration;
-                        _goalDurationUnit = unit;
-                      });
-                    },
-                    goal: _goal,
-                    selectedGoalDuration: _goalDuration,
-                    selectedGoalDurationUnit: _goalDurationUnit,
-                  ),
-                  ChooseCreateRoadmapMethodWidget(
-                    goal: _goal,
-                    selectedGoalDuration: _goalDuration,
-                    subjectName: _subject,
-                    selectedGoalDurationUnit: _goalDurationUnit,
-                    onBack: () {
-                      _pageController.previousPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
-                    },
-                    onCreateRoadmapManually: () {},
-                    onCreateRoadmapWithAI: () {},
-                  ),
-                ],
+        BlocProvider(
+          create: (context) => getIt<CreateRoadmapWithAiCubit>(),
+        ),
+      ],
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(
+            'Create Roadmap',
+            style: Theme
+                .of(context)
+                .textTheme
+                .titleLarge
+                ?.copyWith(fontWeight: FontWeight.bold),
+          ),
+        ),
+        body: SafeArea(
+          child: Column(
+            children: [
+              LinearProgressIndicator(
+                value: _progress,
               ),
-            ),
-          ],
+              Expanded(
+                child: PageView(
+                  controller: _pageController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  onPageChanged: (index) {
+                    setState(() {
+                      _progress = (index + 1) / 3.0;
+                    });
+                  },
+                  children: [
+                    ChooseSubjectWidget(
+                      selectedSubjectName: _subject,
+                      onNext: (subject) {
+                        _pageController.nextPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                        setState(() {
+                          _subject = subject;
+                        });
+                      },
+                    ),
+                    ChooseGoalsDurationWidget(
+                      subjectName: _subject,
+                      onNext: () {
+                        _pageController.nextPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      },
+                      onBack: () {
+                        _pageController.previousPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      },
+                      onGoalChanged: (goal) {
+                        setState(() {
+                          _goal = goal;
+                        });
+                      },
+                      onDurationChanged: (duration, unit) {
+                        setState(() {
+                          _goalDuration = duration;
+                          _goalDurationUnit = unit;
+                        });
+                      },
+                      goal: _goal,
+                      selectedGoalDuration: _goalDuration,
+                      selectedGoalDurationUnit: _goalDurationUnit,
+                    ),
+                    BlocConsumer<CreateRoadmapWithAiCubit,
+                        CreateRoadmapWithAiState>(
+                      listener: (context, createRoadmapWithAiState) {
+                        switch (createRoadmapWithAiState) {
+                          case CreateRoadmapWithAiInitial():
+                            break;
+                          case CreateRoadmapWithAiLoading():
+                            context.showLoading();
+                            break;
+                          case CreateRoadmapWithAiSuccess():
+                            context.hideLoading();
+                            context.pop();
+                            break;
+                          case CreateRoadmapWithAiError():
+                            context.hideLoading();
+                            context.showErrorDialog(
+                                title: 'Failed to create roadmap',
+                                message:
+                                'Something went wrong, please try again.',
+                                onRetry: () {
+                                  context
+                                      .read<CreateRoadmapWithAiCubit>()
+                                      .createRoadmapWithAI(
+                                    CreateRoadmapInput(
+                                      subjectName: _subject ?? '',
+                                      goal: _goal ?? '',
+                                      duration: _goalDuration,
+                                      durationUnit: _goalDurationUnit,
+                                    ),
+                                  );
+                                });
+                            break;
+                        }
+                      },
+                      builder: (context, createRoadmapWithAiState) {
+                        return BlocConsumer<CreateRoadmapCubit,
+                            CreateRoadmapState>(
+                          listener: (context, createRoadmapState) {
+                            switch (createRoadmapState) {
+                              case CreateRoadmapInitial():
+                                break;
+                              case CreateRoadmapLoading():
+                                context.showLoading();
+                                break;
+                              case CreateRoadmapSuccess():
+                                context.hideLoading();
+                                context.pop();
+                                break;
+                              case CreateRoadmapError():
+                                context.hideLoading();
+                                context.showErrorDialog(
+                                    title: 'Failed to create roadmap',
+                                    message:
+                                    'Something went wrong, please try again.',
+                                    onRetry: () {
+                                      context
+                                          .read<CreateRoadmapCubit>()
+                                          .createRoadmap(
+                                        CreateRoadmapInput(
+                                          subjectName: _subject ?? '',
+                                          goal: _goal ?? '',
+                                          duration: _goalDuration,
+                                          durationUnit: _goalDurationUnit,
+                                        ),
+                                      );
+                                    });
+                                break;
+                            }
+                          },
+                          builder: (context, createRoadmapState) {
+                            return ChooseCreateRoadmapMethodWidget(
+                              goal: _goal,
+                              selectedGoalDuration: _goalDuration,
+                              subjectName: _subject,
+                              selectedGoalDurationUnit: _goalDurationUnit,
+                              onBack: () {
+                                _pageController.previousPage(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                );
+                              },
+                              onCreateRoadmapManually: () {
+                                context
+                                    .read<CreateRoadmapCubit>()
+                                    .createRoadmap(
+                                  CreateRoadmapInput(
+                                    subjectName: _subject ?? '',
+                                    goal: _goal ?? '',
+                                    duration: _goalDuration,
+                                    durationUnit: _goalDurationUnit,
+                                  ),
+                                );
+                              },
+                              onCreateRoadmapWithAI: () {
+                                context
+                                    .read<CreateRoadmapWithAiCubit>()
+                                    .createRoadmapWithAI(
+                                  CreateRoadmapInput(
+                                    subjectName: _subject ?? '',
+                                    goal: _goal ?? '',
+                                    duration: _goalDuration,
+                                    durationUnit: _goalDurationUnit,
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

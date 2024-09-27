@@ -24,6 +24,7 @@ class SignInCubit extends Cubit<SignInState> {
 
   Future<void> firebaseSignInWithEmail(SignInInput input) async {
     try {
+      emit(SignInLoading());
       final credential = await _firebaseAuthService.signInWithEmailAndPassword(
           input.email, input.password);
 

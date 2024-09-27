@@ -4,10 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:studybean/common/di/get_it.dart';
 import 'package:studybean/common/extensions/context_dialog_extension.dart';
 import 'package:studybean/common/extensions/context_theme.dart';
-import 'package:studybean/features/roadmap/models/create_local_action_input.dart';
-import 'package:studybean/features/roadmap/views/roadmap/bloc/create_action_cubit/create_local_action_cubit.dart';
 
+import '../../models/create_action_input.dart';
 import '../../models/duration_unit.dart';
+import 'bloc/create_action_cubit/create_action_cubit.dart';
 
 class CreateActionPage extends StatefulWidget {
   const CreateActionPage({super.key, required this.milestoneId});
@@ -55,7 +55,7 @@ class _CreateActionPageState extends State<CreateActionPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => getIt<CreateLocalActionCubit>(),
+      create: (context) => getIt<CreateActionCubit>(),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Add new action'),
@@ -88,8 +88,8 @@ class _CreateActionPageState extends State<CreateActionPage> {
                       decoration: const InputDecoration()
                           .applyDefaults(context.theme.inputDecorationTheme)
                           .copyWith(
-                            hintText: 'What are you going to do?',
-                          ),
+                        hintText: 'What are you going to do?',
+                      ),
                     ),
                     const SizedBox(
                       height: 16,
@@ -113,10 +113,10 @@ class _CreateActionPageState extends State<CreateActionPage> {
                             keyboardType: TextInputType.number,
                             decoration: const InputDecoration()
                                 .applyDefaults(
-                                    context.theme.inputDecorationTheme)
+                                context.theme.inputDecorationTheme)
                                 .copyWith(
-                                  hintText: '3',
-                                ),
+                              hintText: '3',
+                            ),
                           ),
                         ),
                         const SizedBox(
@@ -139,10 +139,10 @@ class _CreateActionPageState extends State<CreateActionPage> {
                             dropdownMenuEntries: DurationUnit.values
                                 .map(
                                   (e) => DropdownMenuEntry<DurationUnit>(
-                                    value: e,
-                                    label: e.name,
-                                  ),
-                                )
+                                value: e,
+                                label: e.name,
+                              ),
+                            )
                                 .toList(),
                           ),
                         ),
@@ -171,8 +171,8 @@ class _CreateActionPageState extends State<CreateActionPage> {
                       decoration: const InputDecoration()
                           .applyDefaults(context.theme.inputDecorationTheme)
                           .copyWith(
-                            hintText: 'Describe your activity',
-                          ),
+                        hintText: 'Describe your activity',
+                      ),
                       maxLines: 3,
                     ),
                     const SizedBox(
@@ -180,34 +180,34 @@ class _CreateActionPageState extends State<CreateActionPage> {
                     ),
                   ],
                 ),
-                BlocConsumer<CreateLocalActionCubit, CreateLocalActionState>(
+                BlocConsumer<CreateActionCubit, CreateActionState>(
                   listener: (context, state) {
                     switch (state) {
-                      case CreateLocalActionInitial():
+                      case CreateActionInitial():
                         break;
-                      case CreateLocalActionLoading():
+                      case CreateActionLoading():
                         break;
-                      case CreateLocalActionSuccess():
+                      case CreateActionSuccess():
                         context.pop(true);
                         break;
-                      case CreateLocalActionError():
+                      case CreateActionError():
                         context.showErrorDialog(
                             title: 'Error',
                             message: 'Something went wrong, please try again.',
                             onRetry: () {
                               if (_formKey.currentState!.validate()) {
                                 context
-                                    .read<CreateLocalActionCubit>()
+                                    .read<CreateActionCubit>()
                                     .createAction(
-                                      CreateLocalActionInput(
-                                        milestoneId: widget.milestoneId,
-                                        name: _titleController.text,
-                                        description: _descriptionController.text,
-                                        duration:
-                                            int.parse(_durationController.text),
-                                        durationUnit: _durationUnit,
-                                      ),
-                                    );
+                                  CreateActionInput(
+                                    milestoneId: widget.milestoneId,
+                                    name: _titleController.text,
+                                    description: _descriptionController.text,
+                                    duration:
+                                    int.parse(_durationController.text),
+                                    durationUnit: _durationUnit,
+                                  ),
+                                );
                               }
 
                               Navigator.pop(context);
@@ -217,32 +217,32 @@ class _CreateActionPageState extends State<CreateActionPage> {
                   },
                   builder: (context, state) {
                     switch (state) {
-                      case CreateLocalActionInitial():
-                      case CreateLocalActionSuccess():
-                      case CreateLocalActionError():
+                      case CreateActionInitial():
+                      case CreateActionSuccess():
+                      case CreateActionError():
                         return Align(
                           alignment: Alignment.bottomCenter,
                           child: ElevatedButton(
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 context
-                                    .read<CreateLocalActionCubit>()
+                                    .read<CreateActionCubit>()
                                     .createAction(
-                                      CreateLocalActionInput(
-                                        milestoneId: widget.milestoneId,
-                                        name: _titleController.text,
-                                        duration:
-                                            int.parse(_durationController.text),
-                                        description: _descriptionController.text,
-                                        durationUnit: _durationUnit,
-                                      ),
-                                    );
+                                  CreateActionInput(
+                                    milestoneId: widget.milestoneId,
+                                    name: _titleController.text,
+                                    duration:
+                                    int.parse(_durationController.text),
+                                    description: _descriptionController.text,
+                                    durationUnit: _durationUnit,
+                                  ),
+                                );
                               }
                             },
                             child: const Text('Create'),
                           ),
                         );
-                      case CreateLocalActionLoading():
+                      case CreateActionLoading():
                         return const Align(
                           alignment: Alignment.bottomCenter,
                           child: CircularProgressIndicator(),

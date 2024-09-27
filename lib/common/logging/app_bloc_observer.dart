@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studybean/common/logging/logger.dart';
 
@@ -26,6 +28,6 @@ class AppBlocObserver extends BlocObserver {
   @override
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
     super.onError(bloc, error, stackTrace);
-    appLogger.info('Error: ${bloc.runtimeType}, $error', stackTrace);
+    log(error.toString(), stackTrace: stackTrace);
   }
 }

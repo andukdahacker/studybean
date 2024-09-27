@@ -25,4 +25,9 @@ class Subject {
         "id": id,
         "name": name,
       };
+
+  Map<String, String> toMap() => {
+        'id': id,
+        'name': name,
+      };
 }

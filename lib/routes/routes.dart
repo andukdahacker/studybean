@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:studybean/features/auth/forgot_password/views/forgot_password_page.dart';
 import 'package:studybean/features/home/views/local_home_page.dart';
 import 'package:studybean/features/roadmap/views/roadmap/action_local_page.dart';
-import 'package:studybean/features/roadmap/views/roadmap/create_action_page.dart';
+import 'package:studybean/features/roadmap/views/roadmap/milestone_page.dart';
 import 'package:studybean/features/roadmap/views/roadmap/roadmap_detail_page.dart';
 
 import '../features/auth/auth/auth_cubit.dart';
+import '../features/auth/change_password/views/change_password_page.dart';
 import '../features/auth/sign_in/views/sign_in_page.dart';
 import '../features/auth/sign_up/views/sign_up_page.dart';
 import '../features/home/views/home_page.dart';
 import '../features/roadmap/views/create_roadmap/create_roadmap_local_page.dart';
 import '../features/roadmap/views/create_roadmap/create_roadmap_page.dart';
+import '../features/roadmap/views/roadmap/action_page.dart';
+import '../features/roadmap/views/roadmap/create_action_page.dart';
+import '../features/roadmap/views/roadmap/create_local_action_page.dart';
 import '../features/roadmap/views/roadmap/milestone_local_page.dart';
 import '../features/roadmap/views/roadmap/roadmap_local_detail_page.dart';
 import '../features/splash/views/first_time_page.dart';
@@ -49,6 +54,7 @@ final router = GoRouter(
             (state.uri.pathSegments.first == 'local' ||
                 state.uri.pathSegments.first == 'firstTime' ||
                 state.uri.pathSegments.first == 'signUp' ||
+                state.uri.pathSegments.first == 'forgotPassword' ||
                 state.uri.pathSegments.first == 'signIn')) {
           return null;
         }
@@ -95,6 +101,10 @@ final router = GoRouter(
       builder: (context, state) => const SignUpPage(),
     ),
     GoRoute(
+      path: '/forgotPassword',
+      builder: (context, state) => const ForgotPasswordPage(),
+    ),
+    GoRoute(
       path: '/local/home',
       builder: (context, state) => const LocalHomePage(),
       routes: [
@@ -115,7 +125,7 @@ final router = GoRouter(
                   GoRoute(
                     name: 'createLocalAction',
                     path: 'createAction',
-                    builder: (context, state) => CreateActionPage(
+                    builder: (context, state) => CreateLocalActionPage(
                       milestoneId: state.pathParameters['milestoneId']!,
                     ),
                   ),
@@ -136,6 +146,30 @@ final router = GoRouter(
         builder: (context, state) => const HomePage(),
         routes: [
           GoRoute(
+              path: 'roadmap/:roadmapId',
+              builder: (context, state) => RoadmapDetailPage(
+                    id: state.pathParameters['roadmapId']!,
+                  ),
+              routes: [
+                GoRoute(
+                    path: 'milestone/:milestoneId',
+                    builder: (context, state) => MilestonePage(
+                        milestoneId: state.pathParameters['milestoneId']!),
+                    routes: [
+                      GoRoute(
+                        path: 'createAction',
+                        builder: (context, state) => CreateActionPage(
+                          milestoneId: state.pathParameters['milestoneId']!,
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'action/:actionId',
+                        builder: (context, state) => ActionPage(
+                            actionId: state.pathParameters['actionId']!),
+                      )
+                    ]),
+              ]),
+          GoRoute(
             name: 'createRoadmap',
             path: 'createRoadmap',
             builder: (context, state) => const CreateRoadmapPage(),
@@ -145,6 +179,10 @@ final router = GoRouter(
             path: 'roadmap/:roadmapId',
             builder: (context, state) =>
                 RoadmapDetailPage(id: state.pathParameters['roadmapId']!),
+          ),
+          GoRoute(
+            path: 'changePassword',
+            builder: (context, state) => const ChangePasswordPage(),
           ),
         ]),
   ],

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:studybean/common/extensions/context_theme.dart';
 import 'package:studybean/features/roadmap/models/roadmap.dart';
 
-class ActionLocalWidget extends StatefulWidget {
-  const ActionLocalWidget({
+class ActionWidget extends StatefulWidget {
+  const ActionWidget({
     super.key,
     required this.action,
     required this.onTap,
@@ -17,10 +17,10 @@ class ActionLocalWidget extends StatefulWidget {
   final VoidCallback onMarkAsComplete;
 
   @override
-  State<ActionLocalWidget> createState() => _ActionLocalWidgetState();
+  State<ActionWidget> createState() => _ActionWidgetState();
 }
 
-class _ActionLocalWidgetState extends State<ActionLocalWidget> {
+class _ActionWidgetState extends State<ActionWidget> {
   final GlobalKey _key = GlobalKey();
 
   @override

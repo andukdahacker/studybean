@@ -59,32 +59,47 @@ class Roadmap {
 
   String toRawJson() => json.encode(toJson());
 
-  factory Roadmap.fromJson(Map<String, dynamic> json) => Roadmap(
+  factory Roadmap.fromJson(Map<String, dynamic> json) =>
+      Roadmap(
         id: json["id"],
         subjectId: json["subjectId"],
         subject:
-            json["subject"] == null ? null : Subject.fromJson(json["subject"]),
-        milestones: json["milestones"] == null
+        json["subject"] == null ? null : Subject.fromJson(json["subject"]),
+        milestones: json["milestone"] == null
             ? []
             : List<Milestone>.from(
-                json["milestones"]!.map((x) => Milestone.fromJson(x))),
+            json["milestone"]!.map((x) => Milestone.fromJson(x))),
         userId: json["userId"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
         goal: json["goal"],
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "id": id,
         "subjectId": subjectId,
         "goal": goal,
         "subject": subject,
-        "milestones": milestones == null
+        "milestone": milestones == null
             ? []
             : List<dynamic>.from(milestones!.map((x) => x.toJson())),
         "userId": userId,
         "createdAt": createdAt.toIso8601String(),
         "updatedAt": updatedAt.toIso8601String(),
+      };
+
+  Map<String, String> toMap() =>
+      {
+        'id': id,
+        'subjectId': subjectId,
+        'goal': goal,
+        'userId': userId ?? '',
+        'subject': subject?.toMap().toString() ?? '',
+        'milestone': milestones?.map((milestone) => milestone.toMap())
+            .toString() ?? '',
+        'createdAt': createdAt.toIso8601String(),
+        'updatedAt': updatedAt.toIso8601String(),
       };
 }
 
@@ -122,7 +137,7 @@ class Milestone {
 
   String get durationText {
     if (actions == null || actions!.isEmpty) {
-      return '0';
+      return '';
     }
     int sumOfDays = 0;
     for (var goal in actions!) {
@@ -151,7 +166,11 @@ class Milestone {
     final weekNum = remainDaysAfterMonth ~/ 7;
     final remainDaysAfterWeek = remainDaysAfterMonth % 7;
 
-    return '${yearNum > 0 ? '$yearNum years' : ''} ${monthNum > 0 ? '$monthNum months' : ''} ${weekNum > 0 ? '$weekNum weeks' : ''} ${remainDaysAfterWeek > 0 ? '$remainDaysAfterWeek days' : ''}';
+    return '${yearNum > 0 ? '$yearNum years' : ''} ${monthNum > 0
+        ? '$monthNum months'
+        : ''} ${weekNum > 0 ? '$weekNum weeks' : ''} ${remainDaysAfterWeek > 0
+        ? '$remainDaysAfterWeek days'
+        : ''}';
   }
 
   Milestone({
@@ -182,25 +201,36 @@ class Milestone {
 
   String toRawJson() => json.encode(toJson());
 
-  factory Milestone.fromJson(Map<String, dynamic> json) => Milestone(
+  factory Milestone.fromJson(Map<String, dynamic> json) =>
+      Milestone(
         id: json['id'],
         index: json['index'] ?? json['position'],
         name: json["name"],
-        actions: json["actions"] == null
+        actions: json["action"] == null
             ? []
             : List<MilestoneAction>.from(
-                json["actions"]!.map((x) => MilestoneAction.fromJson(x))),
+            json["action"]!.map((x) => MilestoneAction.fromJson(x))),
         roadmapId: json["roadmapId"],
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "id": id,
         "index": index,
         "name": name,
-        "goals": actions == null
+        "action": actions == null
             ? []
             : List<dynamic>.from(actions!.map((x) => x.toJson())),
         "roadmapId": roadmapId,
+      };
+
+  Map<String, String> toMap() =>
+      {
+        'id': id,
+        'index': index.toString(),
+        'name': name,
+        'roadmapId': roadmapId,
+        'actions': actions!.map((e) => e.toMap()).toList().toString(),
       };
 }
 
@@ -274,16 +304,17 @@ class MilestoneAction {
       resource: json["resource"] == null
           ? []
           : List<ActionResource>.from(
-              json["resource"]!.map((x) => ActionResource.fromJson(x))),
+          json["resource"]!.map((x) => ActionResource.fromJson(x))),
       deadline:
-          json["deadline"] == null ? null : DateTime.parse(json["deadline"]),
+      json["deadline"] == null ? null : DateTime.parse(json["deadline"]),
       completed: completed,
       duration: json["duration"],
       durationUnit: DurationUnit.fromValue(json["durationUnit"])!,
     );
   }
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "id": id,
         "name": name,
         "milestoneId": milestoneId,
@@ -295,6 +326,21 @@ class MilestoneAction {
         "completed": completed,
         "duration": duration,
         "durationUnit": durationUnit.value,
+      };
+
+  Map<String, String> toMap() =>
+      {
+        'id': id,
+        'milestoneId': milestoneId,
+        'name': name,
+        'description': description ?? '',
+        'duration': duration.toString(),
+        'durationUnit': durationUnit.value,
+        'deadline': deadline?.toIso8601String() ?? '',
+        'completed': completed ? '1' : '0',
+        'resource': resource == null
+            ? ''
+            : resource!.map((x) => x.toMap()).toList().toString(),
       };
 }
 
@@ -333,7 +379,8 @@ class ActionResource {
 
   String toRawJson() => json.encode(toJson());
 
-  factory ActionResource.fromJson(Map<String, dynamic> json) => ActionResource(
+  factory ActionResource.fromJson(Map<String, dynamic> json) =>
+      ActionResource(
         id: json["id"],
         actionId: json["actionId"],
         title: json["title"],
@@ -341,11 +388,21 @@ class ActionResource {
         url: json["url"],
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "id": id,
         "actionId": actionId,
         "title": title,
         "description": description,
         "url": url,
+      };
+
+  Map<String, String> toMap() =>
+      {
+        'id': id,
+        'actionId': actionId,
+        'title': title,
+        'description': description ?? '',
+        'url': url,
       };
 }

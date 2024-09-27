@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:studybean/common/extensions/context_theme.dart';
 import 'package:studybean/features/roadmap/models/roadmap.dart';
 
-class MilestoneLocalWidget extends StatelessWidget {
-  const MilestoneLocalWidget(
+class MilestoneWidget extends StatelessWidget {
+  const MilestoneWidget(
       {super.key, required this.milestone, required this.onTap});
 
   final Milestone milestone;

@@ -1,15 +1,13 @@
 import 'duration_unit.dart';
 
 class CreateRoadmapInput {
-  final String subjectId;
-  final String userId;
+  final String subjectName;
   final String goal;
   final int duration;
   final DurationUnit durationUnit;
 
   CreateRoadmapInput({
-    required this.subjectId,
-    required this.userId,
+    required this.subjectName,
     required this.goal,
     required this.duration,
     required this.durationUnit,
@@ -17,8 +15,7 @@ class CreateRoadmapInput {
 
   Map<String, String> toMap() {
     return {
-      "subjectId": subjectId,
-      "userId": userId,
+      "subjectName": subjectName,
       "goal": goal,
       "duration": duration.toString(),
       "durationUnit": durationUnit.value
@@ -26,7 +23,6 @@ class CreateRoadmapInput {
   }
 
   Map<String, dynamic> toJson() => {
-    "subjectId": subjectId,
-    "userId": userId,
+    "subjectName": subjectName,
   };
 }
