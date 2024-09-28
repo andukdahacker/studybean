@@ -25,6 +25,8 @@ class FirstTimePage extends StatelessWidget {
                 const Hero(
                   tag: 'logo',
                   child: Image(
+                    width: 128,
+                    height: 128,
                     image: AssetImage('assets/logo/logo.png'),
                   ),
                 ),

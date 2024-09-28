@@ -60,6 +60,8 @@ class SplashPage extends StatelessWidget {
               tag: 'logo',
               child: Material(
                 child: Image(
+                  width: 128,
+                  height: 128,
                   image: AssetImage('assets/logo/logo.png'),
                 ),
               ),
