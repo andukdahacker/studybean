@@ -11,7 +11,7 @@ class APIClient {
   final Client _client;
 
   // final String _apiUrl = 'https://api.studybean.io';
-  final String _apiUrl = 'http://studybeanserver-production.up.railway.app/api/v1';
+  final String _apiUrl = 'https://studybeanserver-production.up.railway.app/api/v1';
 
   APIClient(this._client);
 
