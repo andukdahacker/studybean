@@ -25,6 +25,7 @@ import 'package:studybean/features/roadmap/views/create_roadmap/bloc/create_subj
 import 'package:studybean/features/roadmap/views/roadmap/bloc/add_milestone_cubit/add_local_milestone_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/add_milestone_cubit/add_milestone_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/create_action_cubit/create_local_action_cubit.dart';
+import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_action_resource_cubit/delete_action_resource_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_action_resource_cubit/delete_local_action_resource_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_milestone_cubit/delete_local_milestone_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_milestone_cubit/delete_milestone_cubit.dart';
@@ -197,4 +198,6 @@ Future<void> initGetIt() async {
   getIt.registerFactory<ForgotPasswordCubit>(() => ForgotPasswordCubit(getIt<FirebaseAuthService>()));
 
   getIt.registerFactory<UploadLocalRoadmapCubit>(() => UploadLocalRoadmapCubit(getIt<RoadmapRepository>(), getIt<RoadmapLocalRepository>()));
+
+  getIt.registerFactory<DeleteActionResourceCubit>(() => DeleteActionResourceCubit(getIt<RoadmapRepository>()));
 }
