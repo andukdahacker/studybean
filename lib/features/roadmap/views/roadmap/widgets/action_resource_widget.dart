@@ -59,6 +59,9 @@ class ActionResourceWidget extends StatelessWidget {
                         },
                       );
                     },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: context.theme.colorScheme.error,
+                    ),
                     child: const Text('Delete')),
               ],
             ),

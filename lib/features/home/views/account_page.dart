@@ -62,7 +62,12 @@ class AccountPage extends StatelessWidget {
                         const SizedBox(
                           width: 8,
                         ),
-                        const Icon(Icons.info_outline_rounded)
+                        GestureDetector(
+                          onTap: () {
+                            context.showCreditDialog();
+                          },
+                          child: const Icon(Icons.info_outline_rounded),
+                        ),
                       ],
                     ),
                     const SizedBox(

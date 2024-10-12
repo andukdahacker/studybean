@@ -20,10 +20,10 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
-      username: json['username'],
-      email: json['email'],
-      credits: json['credits'],
-      paidCredits: json['paidCredits'],
+      username: json['username'] ?? '',
+      email: json['email'] ?? '',
+      credits: json['credits'] ?? 0,
+      paidCredits: json['paidCredits'] ?? 0,
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
     );

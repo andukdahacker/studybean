@@ -18,6 +18,8 @@ import 'package:studybean/features/home/bloc/upload_local_roadmap_cubit/upload_l
 import 'package:studybean/features/roadmap/repositories/roadmap_local_repository.dart';
 import 'package:studybean/features/roadmap/repositories/roadmap_repository.dart';
 import 'package:studybean/features/roadmap/repositories/subject_repository.dart';
+import 'package:studybean/features/roadmap/repositories/user_local_repository.dart';
+import 'package:studybean/features/roadmap/views/create_roadmap/bloc/check_user_credit/check_local_user_credit_cubit.dart';
 import 'package:studybean/features/roadmap/views/create_roadmap/bloc/choose_subject_cubit/choose_subject_cubit.dart';
 import 'package:studybean/features/roadmap/views/create_roadmap/bloc/create_local_roadmap_cubit/create_local_roadmap_cubit.dart';
 import 'package:studybean/features/roadmap/views/create_roadmap/bloc/create_local_roadmap_cubit/create_local_roadmap_with_ai_cubit.dart';
@@ -29,6 +31,7 @@ import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_action_reso
 import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_action_resource_cubit/delete_local_action_resource_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_milestone_cubit/delete_local_milestone_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_milestone_cubit/delete_milestone_cubit.dart';
+import 'package:studybean/features/roadmap/views/roadmap/bloc/edit_local_action_resource_cubit/edit_action_resource_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/edit_local_action_resource_cubit/edit_local_action_resource_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/edit_milestone_cubit/edit_local_milestone_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/get_action_cubit/get_local_action_cubit.dart';
@@ -97,11 +100,16 @@ Future<void> initGetIt() async {
   getIt.registerSingleton<AuthLocalRepository>(
       AuthLocalRepository(getIt<LocalDB>()));
 
-  getIt.registerFactory<SplashCubit>(
-      () => SplashCubit(getIt<SharedPreferenceService>()));
+  getIt.registerSingleton<UserLocalRepository>(
+      UserLocalRepository(getIt<LocalDB>()));
 
-  getIt.registerFactory<AuthCubit>(
-      () => AuthCubit(getIt<AuthLocalRepository>(), getIt<SharedPreferenceService>()));
+  getIt.registerFactory<SplashCubit>(() => SplashCubit(
+      getIt<RoadmapLocalRepository>(),
+      getIt<UserLocalRepository>(),
+      getIt<AuthLocalRepository>()));
+
+  getIt.registerFactory<AuthCubit>(() => AuthCubit(
+      getIt<AuthLocalRepository>(), getIt<SharedPreferenceService>()));
 
   getIt.registerFactory<ChooseSubjectCubit>(
       () => ChooseSubjectCubit(getIt<SubjectRepository>()));
@@ -154,50 +162,78 @@ Future<void> initGetIt() async {
   getIt.registerFactory<DeleteLocalMilestoneCubit>(
       () => DeleteLocalMilestoneCubit(getIt<RoadmapLocalRepository>()));
 
-  getIt.registerFactory<CreateLocalRoadmapWithAiCubit>(() =>
-      CreateLocalRoadmapWithAiCubit(
-          getIt<RoadmapRepository>(), getIt<RoadmapLocalRepository>()));
+  getIt.registerFactory<CreateLocalRoadmapWithAiCubit>(
+      () => CreateLocalRoadmapWithAiCubit(
+            getIt<RoadmapRepository>(),
+            getIt<RoadmapLocalRepository>(),
+            getIt<UserLocalRepository>(),
+          ));
 
   getIt.registerFactory<SignUpCubit>(
       () => SignUpCubit(getIt<AuthRepository>(), getIt<FirebaseAuthService>()));
 
   getIt.registerFactory<SignInCubit>(() => SignInCubit(
-      getIt<FirebaseAuthService>(),
-      getIt<AuthRepository>(),
-      getIt<SharedPreferenceService>(),
-      getIt<AuthLocalRepository>()));
+        getIt<FirebaseAuthService>(),
+        getIt<AuthRepository>(),
+        getIt<SharedPreferenceService>(),
+        getIt<AuthLocalRepository>(),
+        getIt<UserLocalRepository>(),
+      ));
 
-  getIt.registerFactory<GetRoadmapCubit>(() => GetRoadmapCubit(getIt<RoadmapRepository>()));
+  getIt.registerFactory<GetRoadmapCubit>(
+      () => GetRoadmapCubit(getIt<RoadmapRepository>()));
 
-  getIt.registerFactory<CreateRoadmapCubit>(() => CreateRoadmapCubit(getIt<RoadmapRepository>()));
+  getIt.registerFactory<CreateRoadmapCubit>(
+      () => CreateRoadmapCubit(getIt<RoadmapRepository>()));
 
-  getIt.registerFactory<CreateRoadmapWithAiCubit>(() => CreateRoadmapWithAiCubit(getIt<RoadmapRepository>()));
+  getIt.registerFactory<CreateRoadmapWithAiCubit>(
+      () => CreateRoadmapWithAiCubit(getIt<RoadmapRepository>()));
 
-  getIt.registerFactory<GetRoadmapDetailCubit>(() => GetRoadmapDetailCubit(getIt<RoadmapRepository>()));
+  getIt.registerFactory<GetRoadmapDetailCubit>(
+      () => GetRoadmapDetailCubit(getIt<RoadmapRepository>()));
 
-  getIt.registerFactory<AddMilestoneCubit>(() => AddMilestoneCubit(getIt<RoadmapRepository>()));
+  getIt.registerFactory<AddMilestoneCubit>(
+      () => AddMilestoneCubit(getIt<RoadmapRepository>()));
 
-  getIt.registerFactory<GetMilestoneCubit>(() => GetMilestoneCubit(getIt<RoadmapRepository>()));
+  getIt.registerFactory<GetMilestoneCubit>(
+      () => GetMilestoneCubit(getIt<RoadmapRepository>()));
 
-  getIt.registerFactory<DeleteMilestoneCubit>(() => DeleteMilestoneCubit(getIt<RoadmapRepository>()));
+  getIt.registerFactory<DeleteMilestoneCubit>(
+      () => DeleteMilestoneCubit(getIt<RoadmapRepository>()));
 
-  getIt.registerFactory<MarkActionCompleteCubit>(() => MarkActionCompleteCubit(getIt<RoadmapRepository>()));
+  getIt.registerFactory<MarkActionCompleteCubit>(
+      () => MarkActionCompleteCubit(getIt<RoadmapRepository>()));
 
-  getIt.registerFactory<EditMilestoneCubit>(() => EditMilestoneCubit(getIt<RoadmapRepository>()));
+  getIt.registerFactory<EditMilestoneCubit>(
+      () => EditMilestoneCubit(getIt<RoadmapRepository>()));
 
-  getIt.registerFactory<GetActionCubit>(() => GetActionCubit(getIt<RoadmapRepository>()));
+  getIt.registerFactory<GetActionCubit>(
+      () => GetActionCubit(getIt<RoadmapRepository>()));
 
-  getIt.registerFactory<CreateActionCubit>(() => CreateActionCubit(getIt<RoadmapRepository>()));
+  getIt.registerFactory<CreateActionCubit>(
+      () => CreateActionCubit(getIt<RoadmapRepository>()));
 
-  getIt.registerFactory<DeleteActionCubit>(() => DeleteActionCubit(getIt<RoadmapRepository>()));
+  getIt.registerFactory<DeleteActionCubit>(
+      () => DeleteActionCubit(getIt<RoadmapRepository>()));
 
-  getIt.registerFactory<EditActionCubit>(() => EditActionCubit(getIt<RoadmapRepository>()));
+  getIt.registerFactory<EditActionCubit>(
+      () => EditActionCubit(getIt<RoadmapRepository>()));
 
-  getIt.registerFactory<ChangePasswordCubit>(() => ChangePasswordCubit(getIt<FirebaseAuthService>()));
+  getIt.registerFactory<ChangePasswordCubit>(
+      () => ChangePasswordCubit(getIt<FirebaseAuthService>()));
 
-  getIt.registerFactory<ForgotPasswordCubit>(() => ForgotPasswordCubit(getIt<FirebaseAuthService>()));
+  getIt.registerFactory<ForgotPasswordCubit>(
+      () => ForgotPasswordCubit(getIt<FirebaseAuthService>()));
 
-  getIt.registerFactory<UploadLocalRoadmapCubit>(() => UploadLocalRoadmapCubit(getIt<RoadmapRepository>(), getIt<RoadmapLocalRepository>()));
+  getIt.registerFactory<UploadLocalRoadmapCubit>(() => UploadLocalRoadmapCubit(
+      getIt<RoadmapRepository>(), getIt<RoadmapLocalRepository>()));
 
-  getIt.registerFactory<DeleteActionResourceCubit>(() => DeleteActionResourceCubit(getIt<RoadmapRepository>()));
+  getIt.registerFactory<DeleteActionResourceCubit>(
+      () => DeleteActionResourceCubit(getIt<RoadmapRepository>()));
+
+  getIt.registerFactory<CheckLocalUserCreditCubit>(
+      () => CheckLocalUserCreditCubit(getIt<UserLocalRepository>()));
+
+  getIt.registerFactory<EditActionResourceCubit>(
+      () => EditActionResourceCubit(getIt<RoadmapRepository>()));
 }

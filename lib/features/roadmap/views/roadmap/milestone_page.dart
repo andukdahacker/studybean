@@ -255,8 +255,7 @@ class _MilestonePageState extends State<MilestonePage> {
                                                     backgroundColor:
                                                         MaterialStateProperty
                                                             .all(
-                                                      context.theme.colorScheme
-                                                          .secondary,
+                                                      context.theme.primaryColor,
                                                     ),
                                                   ),
                                                   child: const Text('Edit'),

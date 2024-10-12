@@ -139,7 +139,7 @@ class RoadmapRepository {
       throw Exception('Failed to update milestone');
     }
 
-    return Milestone.fromJson(response.data!['milestone']);
+    return Milestone.fromJson(response.data!);
   }
 
   Future<MilestoneAction> createAction(CreateActionInput input) async {

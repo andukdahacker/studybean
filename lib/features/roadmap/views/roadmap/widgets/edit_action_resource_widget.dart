@@ -21,8 +21,7 @@ class EditActionResourceWidget extends StatefulWidget {
       _EditActionResourceWidgetState();
 }
 
-class _EditActionResourceWidgetState
-    extends State<EditActionResourceWidget> {
+class _EditActionResourceWidgetState extends State<EditActionResourceWidget> {
   late final GlobalKey<FormState> _formKey;
   late final TextEditingController _titleController;
   late final TextEditingController _linkToResourceController;
@@ -64,26 +63,21 @@ class _EditActionResourceWidgetState
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => getIt<EditActionResourceCubit>(),
-      child: Column(
-        children: [
-          BlocConsumer<EditActionResourceCubit,
-              EditActionResourceState>(
-            listener: (context, state) {
-              switch (state) {
-                case EditActionResourceInitial():
-                case EditActionResourceLoading():
-                  break;
-                case EditActionResourceSuccess():
-                  context.pop(state.resource);
-                  break;
-                case EditActionResourceError():
-                  context.showErrorDialog(
-                    title: 'Error',
-                    message: 'Failed to edit resource',
-                    onRetry: () {
-                      context
-                          .read<EditActionResourceCubit>()
-                          .editResource(
+      child: BlocConsumer<EditActionResourceCubit, EditActionResourceState>(
+        listener: (context, state) {
+          switch (state) {
+            case EditActionResourceInitial():
+            case EditActionResourceLoading():
+              break;
+            case EditActionResourceSuccess():
+              context.pop(state.resource);
+              break;
+            case EditActionResourceError():
+              context.showErrorDialog(
+                title: 'Error',
+                message: 'Failed to edit resource',
+                onRetry: () {
+                  context.read<EditActionResourceCubit>().editResource(
                         EditActionResourceInput(
                           id: widget.resource.id,
                           title: _titleController.text,
@@ -91,16 +85,139 @@ class _EditActionResourceWidgetState
                           description: _descriptionController.text,
                         ),
                       );
-                      context.pop();
-                    },
-                  );
-                  break;
-              }
-            },
-            builder: (context, state) {
-              return BottomSheetHeaderWidget(
-                action: GestureDetector(
-                  onTap: () {
+                  context.pop();
+                },
+              );
+              break;
+          }
+        },
+        builder: (context, state) {
+          return Stack(children: [
+            Column(
+              children: [
+                const BottomSheetHeaderWidget(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Form(
+                      key: _formKey,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Title',
+                              style: context.theme.textTheme.bodyMedium,
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            TextFormField(
+                              controller: _titleController,
+                              focusNode: _titleFocusNode,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a title';
+                                }
+                                return null;
+                              },
+                              onEditingComplete: () {
+                                _titleFocusNode.unfocus();
+                                FocusScope.of(context)
+                                    .requestFocus(_linkToResourceFocusNode);
+                              },
+                            ),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            Text(
+                              'Link to resource',
+                              style: context.theme.textTheme.bodyMedium,
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            TextFormField(
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a link';
+                                }
+
+                                if (!AnyLinkPreview.isValidLink(value)) {
+                                  return 'Please enter a valid link';
+                                }
+                                return null;
+                              },
+                              controller: _linkToResourceController,
+                              focusNode: _linkToResourceFocusNode,
+                              onChanged: (value) {
+                                final valid = AnyLinkPreview.isValidLink(value);
+                                setState(() {
+                                  isValidLink = valid;
+                                });
+                              },
+                              onEditingComplete: () {
+                                _linkToResourceFocusNode.unfocus();
+                                FocusScope.of(context)
+                                    .requestFocus(_descriptionFocusNode);
+                                Scrollable.ensureVisible(
+                                    _descriptionKey.currentContext!);
+                              },
+                            ),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            if (isValidLink)
+                              AnyLinkPreview(
+                                link: _linkToResourceController.text,
+                              )
+                            else
+                              Text(
+                                'Link is empty or invalid',
+                                style: context.theme.textTheme.bodyMedium
+                                    ?.copyWith(
+                                  color: Colors.red,
+                                ),
+                              ),
+                            const SizedBox(
+                              height: 32,
+                            ),
+                            Text(
+                              'Description',
+                              style: context.theme.textTheme.bodyMedium,
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            TextFormField(
+                              key: _descriptionKey,
+                              controller: _descriptionController,
+                              focusNode: _descriptionFocusNode,
+                              maxLines: 5,
+                              onEditingComplete: () {
+                                _descriptionFocusNode.unfocus();
+                              },
+                            ),
+                            const SizedBox(
+                              height: 480,
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ElevatedButton(
+                  onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       context
                           .read<EditActionResourceCubit>()
@@ -111,132 +228,12 @@ class _EditActionResourceWidgetState
                           description: _descriptionController.text));
                     }
                   },
-                  child: (state is EditActionResourceLoading)
-                      ? const CircularProgressIndicator()
-                      : Text(
-                    'Save',
-                    style: context.theme.textTheme.bodyLarge?.copyWith(
-                        color: context.theme.colorScheme.primary,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-              );
-            },
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Title',
-                        style: context.theme.textTheme.bodyMedium,
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      TextFormField(
-                        controller: _titleController,
-                        focusNode: _titleFocusNode,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a title';
-                          }
-                          return null;
-                        },
-                        onEditingComplete: () {
-                          _titleFocusNode.unfocus();
-                          FocusScope.of(context)
-                              .requestFocus(_linkToResourceFocusNode);
-                        },
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Text(
-                        'Link to resource',
-                        style: context.theme.textTheme.bodyMedium,
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      TextFormField(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a link';
-                          }
-
-                          if (!AnyLinkPreview.isValidLink(value)) {
-                            return 'Please enter a valid link';
-                          }
-                          return null;
-                        },
-                        controller: _linkToResourceController,
-                        focusNode: _linkToResourceFocusNode,
-                        onChanged: (value) {
-                          final valid = AnyLinkPreview.isValidLink(value);
-                          setState(() {
-                            isValidLink = valid;
-                          });
-                        },
-                        onEditingComplete: () {
-                          _linkToResourceFocusNode.unfocus();
-                          FocusScope.of(context)
-                              .requestFocus(_descriptionFocusNode);
-                          Scrollable.ensureVisible(
-                              _descriptionKey.currentContext!);
-                        },
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      if (isValidLink)
-                        AnyLinkPreview(
-                          link: _linkToResourceController.text,
-                        )
-                      else
-                        Text(
-                          'Link is empty or invalid',
-                          style: context.theme.textTheme.bodyMedium?.copyWith(
-                            color: Colors.red,
-                          ),
-                        ),
-                      const SizedBox(
-                        height: 32,
-                      ),
-                      Text(
-                        'Description',
-                        style: context.theme.textTheme.bodyMedium,
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      TextFormField(
-                        key: _descriptionKey,
-                        controller: _descriptionController,
-                        focusNode: _descriptionFocusNode,
-                        maxLines: 5,
-                        onEditingComplete: () {
-                          _descriptionFocusNode.unfocus();
-                        },
-                      ),
-                      const SizedBox(
-                        height: 480,
-                      )
-                    ],
-                  ),
+                  child: const Text('Save'),
                 ),
               ),
-            ),
-          ),
-        ],
+            )
+          ]);
+        },
       ),
     );
   }

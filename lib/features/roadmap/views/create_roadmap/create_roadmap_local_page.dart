@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:studybean/common/extensions/context_dialog_extension.dart';
 import 'package:studybean/features/roadmap/models/duration_unit.dart';
 import 'package:studybean/features/roadmap/models/generate_milestone_with_ai_input.dart';
+import 'package:studybean/features/roadmap/views/create_roadmap/bloc/check_user_credit/check_local_user_credit_cubit.dart';
 import 'package:studybean/features/roadmap/views/create_roadmap/bloc/create_local_roadmap_cubit/create_local_roadmap_cubit.dart';
 import 'package:studybean/features/roadmap/views/create_roadmap/bloc/create_local_roadmap_cubit/create_local_roadmap_with_ai_cubit.dart';
 import 'package:studybean/features/roadmap/views/create_roadmap/widgets/choose_create_roadmap_method.dart';
@@ -122,59 +123,73 @@ class _CreateRoadmapLocalPageState extends State<CreateRoadmapLocalPage> {
                         create: (context) =>
                             getIt<CreateLocalRoadmapWithAiCubit>(),
                       ),
+                      BlocProvider(
+                        create: (context) => getIt<CheckLocalUserCreditCubit>()
+                          ..checkUserCredit(),
+                      )
                     ],
-                    child: BlocConsumer<CreateLocalRoadmapWithAiCubit,
-                        CreateLocalRoadmapWithAiState>(
-                      listener: (context, state) {
-                        switch (state) {
-                          case CreateLocalRoadmapWithAiInitial():
-                            break;
-                          case CreateLocalRoadmapWithAiLoading():
-                            context.showLoading();
-                            break;
-                          case CreateLocalRoadmapWithAiSuccess():
-                            context.pop();
-                            if (widget.isFirstTime) {
-                              context.go('/local/home');
-                            } else {
-                              context.pop();
-                            }
-                            break;
-                          case CreateLocalRoadmapWithAiError():
-                            context.pop();
-                            context.showErrorDialog(
-                              title: 'Failed to create roadmap',
-                              message: 'Please try again later',
-                            );
-                            break;
-                        }
-                      },
-                      builder: (context, state) {
-                        return BlocConsumer<CreateLocalRoadmapCubit,
-                            CreateLocalRoadmapState>(
-                          listener: (context, state) {
-                            switch (state) {
-                              case CreateLocalRoadmapInitial():
-                                break;
-                              case CreateLocalRoadmapLoading():
-                                break;
-                              case CreateLocalRoadmapSuccess():
-                                if (widget.isFirstTime) {
-                                  context.go('/local/home');
-                                } else {
+                    child: Builder(builder: (context) {
+                      return MultiBlocListener(
+                        listeners: [
+                          BlocListener<CreateLocalRoadmapWithAiCubit,
+                              CreateLocalRoadmapWithAiState>(
+                            listener: (context, state) {
+                              switch (state) {
+                                case CreateLocalRoadmapWithAiInitial():
+                                  break;
+                                case CreateLocalRoadmapWithAiLoading():
+                                  context.showLoading();
+                                  break;
+                                case CreateLocalRoadmapWithAiSuccess():
                                   context.pop();
-                                }
-                                break;
-                              case CreateLocalRoadmapError():
-                                context.showErrorDialog(
-                                  title: 'Failed to create roadmap',
-                                  message: 'Please try again later',
-                                );
-                                break;
-                            }
-                          },
+                                  if (widget.isFirstTime) {
+                                    context.go('/local/home');
+                                  } else {
+                                    context.pop();
+                                  }
+                                  break;
+                                case CreateLocalRoadmapWithAiError():
+                                  context.pop();
+                                  context.showErrorDialog(
+                                    title: 'Failed to create roadmap',
+                                    message: 'Please try again later',
+                                  );
+                                  break;
+                              }
+                            },
+                          ),
+                          BlocListener<CreateLocalRoadmapCubit,
+                              CreateLocalRoadmapState>(
+                            listener: (context, state) {
+                              switch (state) {
+                                case CreateLocalRoadmapInitial():
+                                  break;
+                                case CreateLocalRoadmapLoading():
+                                  break;
+                                case CreateLocalRoadmapSuccess():
+                                  if (widget.isFirstTime) {
+                                    context.go('/local/home');
+                                  } else {
+                                    context.pop();
+                                  }
+                                  break;
+                                case CreateLocalRoadmapError():
+                                  context.showErrorDialog(
+                                    title: 'Failed to create roadmap',
+                                    message: 'Please try again later',
+                                  );
+                                  break;
+                              }
+                            },
+                          ),
+                        ],
+                        child: BlocBuilder<CheckLocalUserCreditCubit,
+                            CheckLocalUserCreditState>(
                           builder: (context, state) {
                             return ChooseCreateRoadmapMethodWidget(
+                              credits: (state is CheckLocalUserCreditSuccess)
+                                  ? state.totalCredits
+                                  : 0,
                               goal: _goal,
                               selectedGoalDuration: _goalDuration,
                               subjectName: subjectName,
@@ -210,9 +225,9 @@ class _CreateRoadmapLocalPageState extends State<CreateRoadmapLocalPage> {
                               },
                             );
                           },
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    }),
                   ),
                 ],
               ),

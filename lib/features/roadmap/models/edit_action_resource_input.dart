@@ -14,6 +14,7 @@ class EditActionResourceInput {
 
   Map<String, String> toMap() {
     return {
+      'id': id,
       'title': title ?? '',
       'url': url ?? '',
       'description': description ?? '',

@@ -60,43 +60,21 @@ class _EditActionWidgetState extends State<EditActionWidget> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => getIt<EditActionCubit>(),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            BlocConsumer<EditActionCubit, EditActionState>(
-              listener: (context, state) {
-                switch (state) {
-                  case EditActionInitial():
-                  case EditActionLoading():
-                    break;
-                  case EditActionSuccess():
-                    context.pop(state.action);
-                    break;
-                  case EditActionError():
-                    context.showErrorDialog(
-                        title: 'Failed to save action',
-                        message: 'Something went wrong, please try again later',
-                        onRetry: () {
-                          context.read<EditActionCubit>().editAction(
-                            UpdateActionInput(
-                              id: widget.action.id,
-                              name: _titleController.text,
-                              description: _descriptionController.text,
-                              duration: int.parse(_durationController.text),
-                              durationUnit: _durationUnit,
-                            ),
-                          );
-                        });
-                    break;
-                }
-              },
-              builder: (context, state) {
-                return BottomSheetHeaderWidget(
-                  action: GestureDetector(
-                    onTap: () {
-                      if (_formKey.currentState!.validate()) {
-                        context.read<EditActionCubit>().editAction(
+      child: BlocConsumer<EditActionCubit, EditActionState>(
+        listener: (context, state) {
+          switch (state) {
+            case EditActionInitial():
+            case EditActionLoading():
+              break;
+            case EditActionSuccess():
+              context.pop(state.action);
+              break;
+            case EditActionError():
+              context.showErrorDialog(
+                  title: 'Failed to save action',
+                  message: 'Something went wrong, please try again later',
+                  onRetry: () {
+                    context.read<EditActionCubit>().editAction(
                           UpdateActionInput(
                             id: widget.action.id,
                             name: _titleController.text,
@@ -105,22 +83,17 @@ class _EditActionWidgetState extends State<EditActionWidget> {
                             durationUnit: _durationUnit,
                           ),
                         );
-                      }
-                    },
-                    child: Text(
-                      'Save',
-                      style: context.theme.textTheme.bodyMedium?.copyWith(
-                        color: context.theme.colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
+                  });
+              break;
+          }
+        },
+        builder: (context, state) {
+          return Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                const BottomSheetHeaderWidget(),
+                Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,8 +117,8 @@ class _EditActionWidgetState extends State<EditActionWidget> {
                         decoration: const InputDecoration()
                             .applyDefaults(context.theme.inputDecorationTheme)
                             .copyWith(
-                          hintText: 'What are you going to do?',
-                        ),
+                              hintText: 'What are you going to do?',
+                            ),
                       ),
                       const SizedBox(
                         height: 16,
@@ -169,10 +142,10 @@ class _EditActionWidgetState extends State<EditActionWidget> {
                               keyboardType: TextInputType.number,
                               decoration: const InputDecoration()
                                   .applyDefaults(
-                                  context.theme.inputDecorationTheme)
+                                      context.theme.inputDecorationTheme)
                                   .copyWith(
-                                hintText: '3',
-                              ),
+                                    hintText: '3',
+                                  ),
                             ),
                           ),
                           const SizedBox(
@@ -195,10 +168,10 @@ class _EditActionWidgetState extends State<EditActionWidget> {
                               dropdownMenuEntries: DurationUnit.values
                                   .map(
                                     (e) => DropdownMenuEntry<DurationUnit>(
-                                  value: e,
-                                  label: e.name,
-                                ),
-                              )
+                                      value: e,
+                                      label: e.name,
+                                    ),
+                                  )
                                   .toList(),
                             ),
                           ),
@@ -227,20 +200,42 @@ class _EditActionWidgetState extends State<EditActionWidget> {
                         decoration: const InputDecoration()
                             .applyDefaults(context.theme.inputDecorationTheme)
                             .copyWith(
-                          hintText: 'Describe your activity',
-                        ),
+                              hintText: 'Describe your activity',
+                            ),
                         maxLines: 3,
                       ),
                       const SizedBox(
                         height: 32,
                       ),
+
                     ],
                   ),
                 ),
-              ),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        context.read<EditActionCubit>().editAction(
+                          UpdateActionInput(
+                            id: widget.action.id,
+                            name: _titleController.text,
+                            description: _descriptionController.text,
+                            duration:
+                            int.parse(_durationController.text),
+                            durationUnit: _durationUnit,
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text('Save'),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

@@ -250,44 +250,60 @@ class _SignUpPageState extends State<SignUpPage> {
                               )
                             : const Text('Sign up'),
                       ),
-                      // const SizedBox(
-                      //   height: 16,
-                      // ),
-                      // Text(
-                      //   'Or',
-                      //   style: Theme.of(context).textTheme.bodyMedium,
-                      // ),
-                      // const SizedBox(
-                      //   height: 8,
-                      // ),
-                      // ElevatedButton(
-                      //   onPressed: () {},
-                      //   child: const Text('Sign up with Google'),
-                      // ),
                       const SizedBox(
-                        height: 16,
+                        height: 24,
                       ),
-                      Text(
-                        'Already have an account?',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            decoration: TextDecoration.underline,
-                            color: context.theme.primaryColor),
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          final currentPath = context.currentPath;
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Already have an account?',
+                              style: Theme.of(context).textTheme.bodyMedium),
+                          const SizedBox(
+                            width: 4,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              final currentPath = context.currentPath;
 
-                          if (currentPath.pathSegments.contains('firstTime')) {
-                            context.push('/firstTime/signIn');
-                          } else {
-                            context.push('/signIn');
-                          }
-                        },
-                        child: const Text('Sign in'),
+                              if (currentPath.pathSegments
+                                  .contains('firstTime')) {
+                                context.push('/firstTime/signIn');
+                              } else {
+                                context.push('/signIn');
+                              }
+                            },
+                            child: Text(
+                              'Sign in',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: context.theme.colorScheme.primary,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                            ),
+                          )
+                        ],
                       ),
+                      // Row(
+                      //   children: [
+                      // const SizedBox(
+                      //   width: 8,
+                      // ),
+                      // GestureDetector(
+                      //     onTap: () {
+                      //       final currentPath = context.currentPath;
+                      //
+                      //       if (currentPath.pathSegments
+                      //           .contains('firstTime')) {
+                      //         context.push('/firstTime/signIn');
+                      //       } else {
+                      //         context.push('/signIn');
+                      //       }
+                      //     },
+                      //     child: Text('Sign in')),
+                      //   ],
+                      // ),
                     ],
                   ),
                 ),

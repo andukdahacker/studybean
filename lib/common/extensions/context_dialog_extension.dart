@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/bottom_sheet_header_widget.dart';
+
 extension ContextDialogExtension on BuildContext {
   Future<T?> showCustomDialog<T>({
     required Widget Function(BuildContext context) builder,
@@ -122,12 +124,60 @@ extension ContextDialogExtension on BuildContext {
       context: this,
       barrierDismissible: false,
       builder: (context) => const Center(
-        child: CircularProgressIndicator(color: Colors.white,),
+        child: CircularProgressIndicator(
+          color: Colors.white,
+        ),
       ),
     );
   }
 
   void hideLoading() {
     Navigator.pop(this);
+  }
+
+  void showCreditDialog() {
+    showBottomSheet(
+      heightRatio: 0.4,
+      builder: (context) {
+        return Column(
+          children: [
+            const BottomSheetHeaderWidget(
+              title: 'About Credit',
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    RichText(
+                      text: TextSpan(children: [
+                        TextSpan(
+                            text: 'Credit ',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(fontWeight: FontWeight.bold)),
+                        const TextSpan(
+                            text:
+                                'is a special token for services and features in StudyBean, such as generating roadmap with AI')
+                      ], style: Theme.of(context).textTheme.bodyLarge),
+                    ),
+                    const SizedBox(
+                      height: 48,
+                    ),
+                    Text('Free 10 credits everyday!',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge
+                            ?.copyWith(fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ),
+            )
+          ],
+        );
+      },
+    );
   }
 }

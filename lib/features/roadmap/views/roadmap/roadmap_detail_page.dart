@@ -46,15 +46,14 @@ class _RoadmapDetailPageState extends State<RoadmapDetailPage> {
       providers: [
         BlocProvider(
           create: (context) =>
-          getIt<GetRoadmapDetailCubit>()..getRoadmapDetail(widget.id),
+              getIt<GetRoadmapDetailCubit>()..getRoadmapDetail(widget.id),
         ),
         BlocProvider(
           create: (context) => getIt<AddMilestoneCubit>(),
           lazy: false,
         )
       ],
-      child:
-      BlocBuilder<GetRoadmapDetailCubit, GetRoadmapDetailState>(
+      child: BlocBuilder<GetRoadmapDetailCubit, GetRoadmapDetailState>(
         builder: (context, state) {
           switch (state) {
             case GetRoadmapDetailInitial():
@@ -62,8 +61,7 @@ class _RoadmapDetailPageState extends State<RoadmapDetailPage> {
               return const LoadingPage();
             case GetRoadmapDetailSuccess():
               final roadmap = state.roadmap;
-              return BlocListener<AddMilestoneCubit,
-                  AddMilestoneState>(
+              return BlocListener<AddMilestoneCubit, AddMilestoneState>(
                 listener: (context, state) async {
                   switch (state) {
                     case AddMilestoneInitial():
@@ -120,24 +118,23 @@ class _RoadmapDetailPageState extends State<RoadmapDetailPage> {
                                             message: 'Please try again.',
                                             onRetry: () {
                                               context
-                                                  .read<
-                                                  AddMilestoneCubit>()
+                                                  .read<AddMilestoneCubit>()
                                                   .createMilestone(
-                                                CreateMilestoneInput(
-                                                  name:
-                                                  _milestoneNameController
-                                                      .text,
-                                                  index: index,
-                                                  roadmapId: roadmap.id,
-                                                ),
-                                              );
+                                                    CreateMilestoneInput(
+                                                      name:
+                                                          _milestoneNameController
+                                                              .text,
+                                                      index: index,
+                                                      roadmapId: roadmap.id,
+                                                    ),
+                                                  );
                                             });
                                         break;
                                     }
                                   },
                                   child: Row(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       if (!_isAddingMilestone)
                                         Expanded(
@@ -166,8 +163,25 @@ class _RoadmapDetailPageState extends State<RoadmapDetailPage> {
                                           ),
                                         )
                                       else
-                                        const Expanded(
-                                          child: MilestoneDotWidget(),
+                                        Expanded(
+                                          child: Column(
+                                            children: [
+                                              const MilestoneDotWidget(),
+                                              const SizedBox(
+                                                height: 8,
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    _isAddingMilestone = false;
+                                                  });
+                                                  _milestoneNameController
+                                                      .clear();
+                                                },
+                                                child: const Icon(Icons.remove),
+                                              )
+                                            ],
+                                          ),
                                         ),
                                       if (!_isAddingMilestone)
                                         const Spacer(
@@ -181,24 +195,23 @@ class _RoadmapDetailPageState extends State<RoadmapDetailPage> {
                                                 left: 16.0),
                                             child: TextField(
                                               controller:
-                                              _milestoneNameController,
+                                                  _milestoneNameController,
                                               focusNode:
-                                              _milestoneNameFocusNode,
+                                                  _milestoneNameFocusNode,
                                               onEditingComplete: () {
                                                 if (_milestoneNameController
                                                     .text.isNotEmpty) {
                                                   context
-                                                      .read<
-                                                      AddMilestoneCubit>()
+                                                      .read<AddMilestoneCubit>()
                                                       .createMilestone(
-                                                    CreateMilestoneInput(
-                                                      name:
-                                                      _milestoneNameController
-                                                          .text,
-                                                      index: index,
-                                                      roadmapId: roadmap.id,
-                                                    ),
-                                                  );
+                                                        CreateMilestoneInput(
+                                                          name:
+                                                              _milestoneNameController
+                                                                  .text,
+                                                          index: index,
+                                                          roadmapId: roadmap.id,
+                                                        ),
+                                                      );
 
                                                   setState(() {
                                                     _isAddingMilestone = false;
@@ -206,25 +219,55 @@ class _RoadmapDetailPageState extends State<RoadmapDetailPage> {
                                                 }
                                               },
                                               decoration:
-                                              const InputDecoration()
-                                                  .applyDefaults(context
-                                                  .theme
-                                                  .inputDecorationTheme)
-                                                  .copyWith(
-                                                hintText:
-                                                'Milestone Name',
-                                                suffixIcon:
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      _isAddingMilestone =
-                                                      false;
-                                                    });
-                                                  },
-                                                  child: const Icon(
-                                                      Icons.remove),
-                                                ),
-                                              ),
+                                                  const InputDecoration()
+                                                      .applyDefaults(context
+                                                          .theme
+                                                          .inputDecorationTheme)
+                                                      .copyWith(
+                                                        hintText:
+                                                            'Milestone Name',
+                                                        suffix: GestureDetector(
+                                                          onTap: () {
+                                                            if (_milestoneNameController
+                                                                .text
+                                                                .isNotEmpty) {
+                                                              context
+                                                                  .read<
+                                                                      AddMilestoneCubit>()
+                                                                  .createMilestone(
+                                                                    CreateMilestoneInput(
+                                                                      name: _milestoneNameController
+                                                                          .text,
+                                                                      index:
+                                                                          index,
+                                                                      roadmapId:
+                                                                          roadmap
+                                                                              .id,
+                                                                    ),
+                                                                  );
+
+                                                              setState(() {
+                                                                _isAddingMilestone =
+                                                                    false;
+                                                              });
+                                                            }
+                                                          },
+                                                          child: Text(
+                                                            'Save',
+                                                            style: context
+                                                                .theme
+                                                                .textTheme
+                                                                .bodyMedium
+                                                                ?.copyWith(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    color: context
+                                                                        .theme
+                                                                        .primaryColor),
+                                                          ),
+                                                        ),
+                                                      ),
                                             ),
                                           ),
                                         )
@@ -259,11 +302,12 @@ class _RoadmapDetailPageState extends State<RoadmapDetailPage> {
                                       flex: 7,
                                       child: Padding(
                                         padding:
-                                        const EdgeInsets.only(bottom: 16.0),
+                                            const EdgeInsets.only(bottom: 16.0),
                                         child: MilestoneWidget(
                                           onTap: () async {
-                                            final shouldReload = await context.push<bool>(
-                                                '/home/roadmap/${milestone.roadmapId}/milestone/${milestone.id}');
+                                            final shouldReload =
+                                                await context.push<bool>(
+                                                    '/home/roadmap/${milestone.roadmapId}/milestone/${milestone.id}');
 
                                             if (context.mounted &&
                                                 (shouldReload ?? false)) {

@@ -33,13 +33,12 @@ class _ActionPageState extends State<ActionPage> {
       providers: [
         BlocProvider(
           create: (context) =>
-          getIt<GetActionCubit>()..getAction(widget.actionId),
+              getIt<GetActionCubit>()..getAction(widget.actionId),
         ),
         BlocProvider(
           create: (context) => getIt<DeleteActionResourceCubit>(),
         ),
-        BlocProvider(
-            create: (context) => getIt<MarkActionCompleteCubit>()),
+        BlocProvider(create: (context) => getIt<MarkActionCompleteCubit>()),
         BlocProvider(
           create: (context) => getIt<DeleteActionCubit>(),
         ),
@@ -51,8 +50,7 @@ class _ActionPageState extends State<ActionPage> {
             case GetActionLoading():
               return const LoadingPage();
             case GetActionSuccess():
-              return BlocConsumer<DeleteActionCubit,
-                  DeleteActionState>(
+              return BlocConsumer<DeleteActionCubit, DeleteActionState>(
                 listener: (deleteLocalActionContext, deleteLocalActionState) {
                   switch (deleteLocalActionState) {
                     case DeleteActionInitial():
@@ -65,7 +63,7 @@ class _ActionPageState extends State<ActionPage> {
                       context.showErrorDialog(
                           title: 'Failed to delete action',
                           message:
-                          'Something went wrong, please try again later',
+                              'Something went wrong, please try again later',
                           onRetry: () => deleteLocalActionContext
                               .read<DeleteActionCubit>()
                               .deleteAction(widget.actionId));
@@ -97,10 +95,8 @@ class _ActionPageState extends State<ActionPage> {
                                   .updateAction(updatedAction);
                             }
                           },
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.mode_edit_rounded,
-                            color: deleteLocalActionContext
-                                .theme.colorScheme.secondary,
                           ),
                         ),
                         IconButton(
@@ -108,7 +104,7 @@ class _ActionPageState extends State<ActionPage> {
                             deleteLocalActionContext.showConfirmDialog(
                               title: 'Delete action',
                               message:
-                              'Are you sure you want to delete this action?',
+                                  'Are you sure you want to delete this action?',
                               onConfirm: () {
                                 deleteLocalActionContext
                                     .read<DeleteActionCubit>()
@@ -152,16 +148,14 @@ class _ActionPageState extends State<ActionPage> {
                                 case MarkActionCompleteLoading():
                                   break;
                                 case MarkActionCompleteSuccess():
-                                  context
-                                      .read<GetActionCubit>()
-                                      .updateAction(
+                                  context.read<GetActionCubit>().updateAction(
                                       markActionCompleteState.action);
                                   break;
                                 case MarkActionCompleteFailure():
                                   context.showErrorDialog(
                                       title: 'Failed to mark as complete',
                                       message:
-                                      'Something went wrong, please try again.');
+                                          'Something went wrong, please try again.');
                                   break;
                               }
                             },
@@ -179,10 +173,10 @@ class _ActionPageState extends State<ActionPage> {
                                       context
                                           .read<MarkActionCompleteCubit>()
                                           .updateActionComplete(
-                                        getLocalActionState.action.id,
-                                        !getLocalActionState
-                                            .action.completed,
-                                      );
+                                            getLocalActionState.action.id,
+                                            !getLocalActionState
+                                                .action.completed,
+                                          );
                                     },
                                     child: Text(
                                       getLocalActionState.action.completed
@@ -190,8 +184,8 @@ class _ActionPageState extends State<ActionPage> {
                                           : 'Mark as complete',
                                       style: context.theme.textTheme.bodyMedium
                                           ?.copyWith(
-                                          color: context
-                                              .theme.colorScheme.secondary),
+                                              color: context
+                                                  .theme.colorScheme.secondary),
                                     ),
                                   )
                                 ],
@@ -233,14 +227,14 @@ class _ActionPageState extends State<ActionPage> {
                                   IconButton(
                                     onPressed: () async {
                                       final resource =
-                                      await deleteLocalActionContext
-                                          .showBottomSheet<ActionResource>(
+                                          await deleteLocalActionContext
+                                              .showBottomSheet<ActionResource>(
                                         heightRatio: 1,
                                         builder: (context) =>
                                             CreateActionResourceWidget(
-                                              actionId:
+                                          actionId:
                                               getLocalActionState.action.id,
-                                            ),
+                                        ),
                                       );
 
                                       if (resource != null &&
@@ -265,12 +259,12 @@ class _ActionPageState extends State<ActionPage> {
                                           style: deleteLocalActionContext
                                               .theme.textTheme.bodyMedium
                                               ?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              color:
-                                              deleteLocalActionContext
-                                                  .theme
-                                                  .colorScheme
-                                                  .tertiary),
+                                                  fontWeight: FontWeight.bold,
+                                                  color:
+                                                      deleteLocalActionContext
+                                                          .theme
+                                                          .colorScheme
+                                                          .tertiary),
                                         )
                                       ],
                                     ),
@@ -298,11 +292,10 @@ class _ActionPageState extends State<ActionPage> {
                                   context.showErrorDialog(
                                       title: 'Failed to delete resource',
                                       message:
-                                      'Something went wrong. Please try again later',
+                                          'Something went wrong. Please try again later',
                                       onRetry: () {
                                         context
-                                            .read<
-                                            DeleteActionResourceCubit>()
+                                            .read<DeleteActionResourceCubit>()
                                             .deleteResource(widget.actionId);
                                         context.pop();
                                       });
@@ -313,7 +306,7 @@ class _ActionPageState extends State<ActionPage> {
                               return Expanded(
                                 child: ListView.separated(
                                   separatorBuilder: (context, index) =>
-                                  const SizedBox(
+                                      const SizedBox(
                                     height: 16,
                                   ),
                                   itemBuilder: (context, index) {
@@ -327,8 +320,8 @@ class _ActionPageState extends State<ActionPage> {
                                           heightRatio: 1,
                                           builder: (context) =>
                                               EditActionResourceWidget(
-                                                resource: resource,
-                                              ),
+                                            resource: resource,
+                                          ),
                                         );
 
                                         if (updatedResource != null &&
@@ -336,19 +329,18 @@ class _ActionPageState extends State<ActionPage> {
                                           context
                                               .read<GetActionCubit>()
                                               .updateActionResource(
-                                              updatedResource);
+                                                  updatedResource);
                                         }
                                       },
                                       onDeleteResource: () {
                                         context
-                                            .read<
-                                            DeleteActionResourceCubit>()
+                                            .read<DeleteActionResourceCubit>()
                                             .deleteResource(resource.id);
                                       },
                                     );
                                   },
                                   itemCount: getLocalActionState
-                                      .action.resource?.length ??
+                                          .action.resource?.length ??
                                       0,
                                 ),
                               );
