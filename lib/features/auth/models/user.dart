@@ -17,6 +17,8 @@ class User {
     required this.updatedAt,
   });
 
+  int get totalCredits => credits + paidCredits;
+
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],

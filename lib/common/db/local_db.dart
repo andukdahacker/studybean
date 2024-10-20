@@ -12,7 +12,7 @@ class LocalDB {
       onCreate: (db, version) async {
         try {
           await db.execute(
-              'CREATE TABLE user(id TEXT PRIMARY KEY, username TEXT, email TEXT, credits INTEGER, paidCredits INTEGER, lastRefreshCreditsAt TEXT, createdAt TEXT, updatedAt TEXT)');
+              'CREATE TABLE user(id TEXT PRIMARY KEY, username TEXT, email TEXT, credits INTEGER, paidCredits INTEGER, createdAt TEXT, updatedAt TEXT)');
           await db
               .execute('CREATE TABLE subjects(id TEXT PRIMARY KEY, name TEXT)');
           await db.execute(

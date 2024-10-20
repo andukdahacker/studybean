@@ -14,11 +14,12 @@ import 'package:studybean/features/auth/repository/auth_local_repository.dart';
 import 'package:studybean/features/auth/repository/auth_repository.dart';
 import 'package:studybean/features/auth/services/firebase_auth_service.dart';
 import 'package:studybean/features/auth/sign_up/bloc/sign_up_cubit.dart';
+import 'package:studybean/features/home/bloc/check_user_credit_cubit/check_user_credit_cubit.dart';
 import 'package:studybean/features/home/bloc/upload_local_roadmap_cubit/upload_local_roadmap_cubit.dart';
+import 'package:studybean/features/home/repository/home_repository.dart';
 import 'package:studybean/features/roadmap/repositories/roadmap_local_repository.dart';
 import 'package:studybean/features/roadmap/repositories/roadmap_repository.dart';
 import 'package:studybean/features/roadmap/repositories/subject_repository.dart';
-import 'package:studybean/features/roadmap/repositories/user_local_repository.dart';
 import 'package:studybean/features/roadmap/views/create_roadmap/bloc/check_user_credit/check_local_user_credit_cubit.dart';
 import 'package:studybean/features/roadmap/views/create_roadmap/bloc/choose_subject_cubit/choose_subject_cubit.dart';
 import 'package:studybean/features/roadmap/views/create_roadmap/bloc/create_local_roadmap_cubit/create_local_roadmap_cubit.dart';
@@ -27,10 +28,12 @@ import 'package:studybean/features/roadmap/views/create_roadmap/bloc/create_subj
 import 'package:studybean/features/roadmap/views/roadmap/bloc/add_milestone_cubit/add_local_milestone_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/add_milestone_cubit/add_milestone_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/create_action_cubit/create_local_action_cubit.dart';
+import 'package:studybean/features/roadmap/views/roadmap/bloc/create_action_resource_cubit/create_action_resource_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_action_resource_cubit/delete_action_resource_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_action_resource_cubit/delete_local_action_resource_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_milestone_cubit/delete_local_milestone_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_milestone_cubit/delete_milestone_cubit.dart';
+import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_roadmap_cubit/delete_roadmap_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/edit_local_action_resource_cubit/edit_action_resource_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/edit_local_action_resource_cubit/edit_local_action_resource_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/edit_milestone_cubit/edit_local_milestone_cubit.dart';
@@ -100,13 +103,12 @@ Future<void> initGetIt() async {
   getIt.registerSingleton<AuthLocalRepository>(
       AuthLocalRepository(getIt<LocalDB>()));
 
-  getIt.registerSingleton<UserLocalRepository>(
-      UserLocalRepository(getIt<LocalDB>()));
+  getIt.registerSingleton<HomeRepository>(HomeRepository(getIt<APIClient>()));
 
   getIt.registerFactory<SplashCubit>(() => SplashCubit(
       getIt<RoadmapLocalRepository>(),
-      getIt<UserLocalRepository>(),
-      getIt<AuthLocalRepository>()));
+      getIt<AuthLocalRepository>(),
+      getIt<SharedPreferenceService>()));
 
   getIt.registerFactory<AuthCubit>(() => AuthCubit(
       getIt<AuthLocalRepository>(), getIt<SharedPreferenceService>()));
@@ -166,19 +168,17 @@ Future<void> initGetIt() async {
       () => CreateLocalRoadmapWithAiCubit(
             getIt<RoadmapRepository>(),
             getIt<RoadmapLocalRepository>(),
-            getIt<UserLocalRepository>(),
+            getIt<SharedPreferenceService>(),
           ));
 
   getIt.registerFactory<SignUpCubit>(
       () => SignUpCubit(getIt<AuthRepository>(), getIt<FirebaseAuthService>()));
 
   getIt.registerFactory<SignInCubit>(() => SignInCubit(
-        getIt<FirebaseAuthService>(),
-        getIt<AuthRepository>(),
-        getIt<SharedPreferenceService>(),
-        getIt<AuthLocalRepository>(),
-        getIt<UserLocalRepository>(),
-      ));
+      getIt<FirebaseAuthService>(),
+      getIt<AuthRepository>(),
+      getIt<SharedPreferenceService>(),
+      getIt<AuthLocalRepository>()));
 
   getIt.registerFactory<GetRoadmapCubit>(
       () => GetRoadmapCubit(getIt<RoadmapRepository>()));
@@ -232,8 +232,17 @@ Future<void> initGetIt() async {
       () => DeleteActionResourceCubit(getIt<RoadmapRepository>()));
 
   getIt.registerFactory<CheckLocalUserCreditCubit>(
-      () => CheckLocalUserCreditCubit(getIt<UserLocalRepository>()));
+      () => CheckLocalUserCreditCubit(getIt<SharedPreferenceService>()));
 
   getIt.registerFactory<EditActionResourceCubit>(
       () => EditActionResourceCubit(getIt<RoadmapRepository>()));
+
+  getIt.registerFactory<CreateActionResourceCubit>(
+      () => CreateActionResourceCubit(getIt<RoadmapRepository>()));
+
+  getIt.registerFactory<CheckUserCreditCubit>(
+      () => CheckUserCreditCubit(getIt<HomeRepository>()));
+
+  getIt.registerFactory<DeleteRoadmapCubit>(
+      () => DeleteRoadmapCubit(getIt<RoadmapRepository>()));
 }

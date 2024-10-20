@@ -4,10 +4,12 @@ import 'package:studybean/common/extensions/context_theme.dart';
 import '../../../models/roadmap.dart';
 
 class RoadmapWidget extends StatefulWidget {
-  const RoadmapWidget({super.key, required this.roadmap, required this.onTap});
+  const RoadmapWidget(
+      {super.key, required this.roadmap, required this.onTap, required this.onLongPress,});
 
   final Roadmap roadmap;
   final VoidCallback onTap;
+  final VoidCallback onLongPress;
 
   @override
   State<RoadmapWidget> createState() => _RoadmapWidgetState();
@@ -17,6 +19,7 @@ class _RoadmapWidgetState extends State<RoadmapWidget> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onLongPress: widget.onLongPress,
       onTap: widget.onTap,
       child: Container(
         decoration: BoxDecoration(
@@ -56,7 +59,9 @@ class _RoadmapWidgetState extends State<RoadmapWidget> {
                     width: 8,
                   ),
                   Text(
-                    '${widget.roadmap.milestones?.length ?? 0} milestone${(widget.roadmap.milestones?.length ?? 0) > 1 ? 's' : ''}',
+                    '${widget.roadmap.milestones?.length ??
+                        0} milestone${(widget.roadmap.milestones?.length ?? 0) >
+                        1 ? 's' : ''}',
                     style: context.theme.textTheme.bodyMedium,
                   ),
                   const SizedBox(

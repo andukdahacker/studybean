@@ -24,8 +24,8 @@ class RoadmapLocalPage extends StatelessWidget {
               case GetLocalRoadmapSuccess():
                 return ElevatedButton(
                   style: context.theme.elevatedButtonTheme.style?.copyWith(
-                    minimumSize: MaterialStateProperty.all(const Size(160, 60)),
-                    maximumSize: MaterialStateProperty.all(const Size(208, 60)),
+                    minimumSize: WidgetStateProperty.all(const Size(160, 60)),
+                    maximumSize: WidgetStateProperty.all(const Size(208, 60)),
                   ),
                   onPressed: () async {
                     if (state.roadmaps.isNotEmpty) {
@@ -174,9 +174,7 @@ class RoadmapLocalPage extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                     child: RefreshIndicator(
                       onRefresh: () async {
-                        context
-                            .read<GetLocalRoadmapCubit>()
-                            .getRoadmaps();
+                        context.read<GetLocalRoadmapCubit>().getRoadmaps();
                       },
                       child: ListView.separated(
                         itemCount: state.roadmaps.length,
@@ -187,9 +185,13 @@ class RoadmapLocalPage extends StatelessWidget {
                         },
                         itemBuilder: (context, index) {
                           final roadmap = state.roadmaps[index];
-                          return RoadmapWidget(roadmap: roadmap, onTap: () {
-                            context.push('/local/home/roadmap/${roadmap.id}');
-                          });
+                          return RoadmapWidget(
+                            roadmap: roadmap,
+                            onTap: () {
+                              context.push('/local/home/roadmap/${roadmap.id}');
+                            },
+                            onLongPress: () {},
+                          );
                         },
                       ),
                     ),

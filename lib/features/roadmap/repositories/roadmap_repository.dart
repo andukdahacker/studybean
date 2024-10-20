@@ -19,6 +19,10 @@ class RoadmapRepository {
 
   RoadmapRepository(this._client);
 
+  Future<void> deleteRoadmap(String id) async {
+    await _client.call(HttpMethod.DELETE, path: '/roadmaps', body: {'id': id});
+  }
+
   Future<Roadmap> getRoadmapById(String id) async {
     final response = await _client.call(
       HttpMethod.GET,

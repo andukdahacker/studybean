@@ -13,16 +13,12 @@ class CreateLocalRoadmapCubit extends Cubit<CreateLocalRoadmapState> {
 
   final RoadmapLocalRepository _roadmapLocalRepository;
 
-  Future<void> createLocalRoadmap(CreateLocalRoadmapInput input, bool isFirstTime) async {
+  Future<void> createLocalRoadmap(
+      CreateLocalRoadmapInput input) async {
     try {
       emit(CreateLocalRoadmapLoading());
-      if(!isFirstTime) {
-        await _roadmapLocalRepository.deleteAllRoadmap();
-      }
-
-      final roadmap = await _roadmapLocalRepository.createRoadmap(
-        input
-      );
+      await _roadmapLocalRepository.deleteAllRoadmap();
+      final roadmap = await _roadmapLocalRepository.createRoadmap(input);
 
       emit(CreateLocalRoadmapSuccess(roadmap));
     } catch (e, stackTrace) {

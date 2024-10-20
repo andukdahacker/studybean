@@ -14,17 +14,6 @@ class LocalHomePage extends StatefulWidget {
 class _LocalHomePageState extends State<LocalHomePage> {
   int _index = 0;
 
-  late final List<Widget> _pages;
-
-  @override
-  void initState() {
-    _pages = [
-      const RoadmapLocalPage(),
-      const LocalAccountPage(),
-    ];
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +41,10 @@ class _LocalHomePageState extends State<LocalHomePage> {
           ),
         ],
       ),
-      body: _pages[_index],
+      body: [
+        const RoadmapLocalPage(),
+        const LocalAccountPage(),
+      ][_index],
     );
   }
 }

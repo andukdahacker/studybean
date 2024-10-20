@@ -263,7 +263,7 @@ class _MilestoneLocalPageState extends State<MilestoneLocalPage> {
                                                       .elevatedButtonTheme.style
                                                       ?.copyWith(
                                                     backgroundColor:
-                                                        MaterialStateProperty
+                                                        WidgetStateProperty
                                                             .all(
                                                       context.theme.colorScheme
                                                           .secondary,
@@ -280,14 +280,16 @@ class _MilestoneLocalPageState extends State<MilestoneLocalPage> {
                                                       title: 'Delete action',
                                                       message:
                                                           'Are you sure you want to delete this action?',
-                                                      onConfirm: () {},
+                                                      onConfirm: () {
+                                                        // TODO: delete action
+                                                      },
                                                     );
                                                   },
                                                   style: context.theme
                                                       .elevatedButtonTheme.style
                                                       ?.copyWith(
                                                     backgroundColor:
-                                                        MaterialStateProperty
+                                                        WidgetStateProperty
                                                             .all(
                                                       context.theme.colorScheme
                                                           .error,

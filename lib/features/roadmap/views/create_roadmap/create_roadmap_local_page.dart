@@ -208,7 +208,6 @@ class _CreateRoadmapLocalPageState extends State<CreateRoadmapLocalPage> {
                                         subject: subjectName ?? '',
                                         goal: _goal ?? '',
                                       ),
-                                      widget.isFirstTime,
                                     );
                               },
                               onCreateRoadmapWithAI: () {

@@ -33,9 +33,7 @@ class MyApp extends StatelessWidget {
               onTertiary: Colors.white,
               error: Colors.red,
               onError: Colors.white,
-              background: Color(0xFFF3F5FC),
-              onBackground: Colors.black,
-              surface: Colors.white,
+              surface: Color(0xFFF3F5FC),
               onSurface: Colors.black,
             ),
             fontFamily: 'PlusJakartaSans',
@@ -137,10 +135,10 @@ class MyApp extends StatelessWidget {
             ),
             dropdownMenuTheme: const DropdownMenuThemeData(
                 menuStyle: MenuStyle(
-              backgroundColor: MaterialStatePropertyAll(Colors.white),
-              surfaceTintColor: MaterialStatePropertyAll(Colors.white),
-              elevation: MaterialStatePropertyAll(1),
-              shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+              backgroundColor: WidgetStatePropertyAll(Colors.white),
+              surfaceTintColor: WidgetStatePropertyAll(Colors.white),
+              elevation: WidgetStatePropertyAll(1),
+              shape: WidgetStatePropertyAll(RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(16)))),
             )),
             bottomAppBarTheme: const BottomAppBarTheme(
@@ -153,7 +151,7 @@ class MyApp extends StatelessWidget {
                   vertical: VisualDensity.minimumDensity,
                   horizontal: VisualDensity.minimumDensity),
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              checkColor: MaterialStatePropertyAll(Colors.white),
+              checkColor: WidgetStatePropertyAll(Colors.white),
             )),
       ),
     );

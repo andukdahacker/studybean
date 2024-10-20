@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studybean/common/di/get_it.dart';
 import 'package:studybean/common/extensions/context_theme.dart';
+import 'package:studybean/features/home/bloc/check_user_credit_cubit/check_user_credit_cubit.dart';
 import 'package:studybean/features/home/bloc/upload_local_roadmap_cubit/upload_local_roadmap_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/roadmap_page.dart';
 
@@ -17,17 +18,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _index = 0;
 
-  late final List<Widget> _pages;
-
   late final PageController _pageController;
 
   @override
   void initState() {
-    _pages = [
-      const RoadmapPage(),
-      const AccountPage(),
-    ];
-
     _pageController = PageController(initialPage: _index);
     super.initState();
   }
@@ -40,8 +34,19 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<UploadLocalRoadmapCubit>()..uploadLocalRoadmap(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) =>
+          getIt<UploadLocalRoadmapCubit>()
+            ..uploadLocalRoadmap(),
+          lazy: false,
+        ),
+        BlocProvider(
+          create: (context) => getIt<CheckUserCreditCubit>()..checkUserCredit(),
+          lazy: false,
+        ),
+      ],
       child: Scaffold(
         bottomNavigationBar: NavigationBar(
           backgroundColor: Colors.white,
@@ -68,7 +73,18 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-        body: PageView(controller: _pageController, children: _pages),
+        body: PageView(
+          controller: _pageController,
+          children: const [
+            RoadmapPage(),
+            AccountPage(),
+          ],
+          onPageChanged: (value) {
+            setState(() {
+              _index = value;
+            });
+          },
+        ),
       ),
     );
   }

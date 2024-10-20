@@ -6,7 +6,6 @@ import 'package:studybean/common/services/shared_preference_service.dart';
 import 'package:studybean/features/auth/models/sign_in_input.dart';
 import 'package:studybean/features/auth/repository/auth_local_repository.dart';
 import 'package:studybean/features/auth/repository/auth_repository.dart';
-import 'package:studybean/features/roadmap/repositories/user_local_repository.dart';
 
 import '../../models/user.dart';
 import '../../services/firebase_auth_service.dart';
@@ -19,14 +18,12 @@ class SignInCubit extends Cubit<SignInState> {
     this._authRepository,
     this._sharedPreferenceService,
     this._authLocalRepository,
-    this._userLocalRepository,
   ) : super(SignInInitial());
 
   final FirebaseAuthService _firebaseAuthService;
   final AuthRepository _authRepository;
   final SharedPreferenceService _sharedPreferenceService;
   final AuthLocalRepository _authLocalRepository;
-  final UserLocalRepository _userLocalRepository;
 
   Future<void> firebaseSignInWithEmail(SignInInput input) async {
     try {
@@ -55,8 +52,6 @@ class SignInCubit extends Cubit<SignInState> {
   Future<void> signInWithEmail(String token) async {
     try {
       final response = await _authRepository.signIn(token);
-
-      await _userLocalRepository.removeUser();
 
       await _sharedPreferenceService.setToken(response.token);
 

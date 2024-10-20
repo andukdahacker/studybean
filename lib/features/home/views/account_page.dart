@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studybean/common/extensions/context_dialog_extension.dart';
 import 'package:studybean/common/extensions/context_theme.dart';
+import 'package:studybean/features/home/bloc/check_user_credit_cubit/check_user_credit_cubit.dart';
 
 import '../../auth/auth/auth_cubit.dart';
 import '../../splash/error_page.dart';
@@ -21,7 +22,7 @@ class AccountPage extends StatelessWidget {
             break;
           case AuthUnauthorized():
           case AuthError():
-            context.go('/login');
+            context.go('/firstTime');
             break;
         }
       },
@@ -54,10 +55,22 @@ class AccountPage extends StatelessWidget {
                         const SizedBox(
                           width: 8,
                         ),
-                        Text(
-                          '${state.user.credits} credits',
-                          style: context.theme.textTheme.titleMedium
-                              ?.copyWith(color: Colors.grey),
+                        BlocBuilder<CheckUserCreditCubit, CheckUserCreditState>(
+                          builder: (context, state) {
+                            switch (state) {
+                              case CheckUserCreditInitial():
+                              case CheckUserCreditLoading():
+                                return const SizedBox.shrink();
+                              case CheckUserCreditSuccess():
+                                return Text(
+                                  '${state.totalCredits} credits',
+                                  style: context.theme.textTheme.titleMedium
+                                      ?.copyWith(color: Colors.grey),
+                                );
+                              case CheckUserCreditError():
+                                return const SizedBox.shrink();
+                            }
+                          },
                         ),
                         const SizedBox(
                           width: 8,

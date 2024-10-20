@@ -253,7 +253,7 @@ class _MilestonePageState extends State<MilestonePage> {
                                                       .elevatedButtonTheme.style
                                                       ?.copyWith(
                                                     backgroundColor:
-                                                        MaterialStateProperty
+                                                        WidgetStateProperty
                                                             .all(
                                                       context.theme.primaryColor,
                                                     ),
@@ -276,7 +276,7 @@ class _MilestonePageState extends State<MilestonePage> {
                                                       .elevatedButtonTheme.style
                                                       ?.copyWith(
                                                     backgroundColor:
-                                                        MaterialStateProperty
+                                                        WidgetStateProperty
                                                             .all(
                                                       context.theme.colorScheme
                                                           .error,

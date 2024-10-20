@@ -1,18 +1,20 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studybean/common/services/shared_preference_service.dart';
 import 'package:studybean/features/auth/repository/auth_local_repository.dart';
 import 'package:studybean/features/roadmap/repositories/roadmap_local_repository.dart';
-import 'package:studybean/features/roadmap/repositories/user_local_repository.dart';
 
 part 'splash_state.dart';
 
 class SplashCubit extends Cubit<SplashState> {
-  SplashCubit(this._roadmapLocalRepository, this._userLocalRepository,
-      this._authLocalRepository)
-      : super(SplashInitial());
+  SplashCubit(
+    this._roadmapLocalRepository,
+    this._authLocalRepository,
+    this._sharedPreferenceService,
+  ) : super(SplashInitial());
 
   final RoadmapLocalRepository _roadmapLocalRepository;
-  final UserLocalRepository _userLocalRepository;
+  final SharedPreferenceService _sharedPreferenceService;
   final AuthLocalRepository _authLocalRepository;
 
   Future<void> init() async {
@@ -28,11 +30,7 @@ class SplashCubit extends Cubit<SplashState> {
       final isFirstTime = localRoadmaps.isEmpty;
 
       if (isFirstTime) {
-        final localUser = await _userLocalRepository.getUser();
-        if (localUser == null) {
-          await _userLocalRepository.createUser();
-        }
-        await _userLocalRepository.refreshCredits(localUser?.id ?? '');
+        await _sharedPreferenceService.resetCredits();
         emit(SplashFirstTime());
       } else {
         emit(SplashLoaded());
