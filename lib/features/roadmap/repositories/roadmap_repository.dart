@@ -203,7 +203,7 @@ class RoadmapRepository {
   Future<List<Roadmap>> uploadLocalRoadmaps(List<Roadmap> roadmaps) async {
     final response = await _client.call(HttpMethod.POST,
         path: '/roadmaps/uploadLocalRoadmaps', body: {
-          'roadmaps': roadmaps.map((e) => e.toMap()).toList().toString(),
+          'roadmaps': roadmaps.map((e) => e.toMap()).toList(),
         });
 
     if (response.data == null) {

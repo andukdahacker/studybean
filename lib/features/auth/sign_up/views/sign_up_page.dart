@@ -142,7 +142,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         },
                         decoration: const InputDecoration()
                             .applyDefaults(context.theme.inputDecorationTheme)
-                            .copyWith(labelText: 'Username'),
+                            .copyWith(labelText: 'Your name'),
                       ),
                       const SizedBox(
                         height: 32,

@@ -41,7 +41,20 @@ class SignInCubit extends Cubit<SignInState> {
       emit(SignInFirebaseSuccess(token: idToken));
     } on firebase_auth.FirebaseAuthException catch (e, stackTrace) {
       addError(e, stackTrace);
-      emit(SignInFirebaseError(message: e.message ?? 'Unknown error'));
+      switch (e.code) {
+        case 'user-not-found':
+          emit(SignInFirebaseError(message: 'User not found'));
+          break;
+        case 'wrong-password':
+          emit(SignInFirebaseError(message: 'Wrong password'));
+          break;
+        case 'network-request-failed':
+          emit(SignInFirebaseError(message: 'No internet connection'));
+          break;
+        default:
+          emit(SignInFirebaseError(
+              message: 'Something went wrong. Please try again'));
+      }
     } catch (e, stackTrace) {
       addError(e, stackTrace);
       emit(SignInFirebaseError(

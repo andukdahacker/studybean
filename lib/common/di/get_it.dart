@@ -33,6 +33,7 @@ import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_action_reso
 import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_action_resource_cubit/delete_local_action_resource_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_milestone_cubit/delete_local_milestone_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_milestone_cubit/delete_milestone_cubit.dart';
+import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_roadmap_cubit/delete_local_roadmap_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/delete_roadmap_cubit/delete_roadmap_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/edit_local_action_resource_cubit/edit_action_resource_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/edit_local_action_resource_cubit/edit_local_action_resource_cubit.dart';
@@ -245,4 +246,7 @@ Future<void> initGetIt() async {
 
   getIt.registerFactory<DeleteRoadmapCubit>(
       () => DeleteRoadmapCubit(getIt<RoadmapRepository>()));
+
+  getIt.registerFactory<DeleteLocalRoadmapCubit>(
+      () => DeleteLocalRoadmapCubit(getIt<RoadmapLocalRepository>()));
 }

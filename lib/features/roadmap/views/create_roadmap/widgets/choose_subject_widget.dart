@@ -134,23 +134,6 @@ class _ChooseSubjectWidgetState extends State<ChooseSubjectWidget> {
                             return const Center(
                                 child: CircularProgressIndicator());
                           case ChooseSubjectLoaded():
-                            if (state.subjects.isEmpty) {
-                              return Center(
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      'No subject found',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium,
-                                    ),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
                             return Wrap(
                               spacing: 8,
                               runSpacing: 8,

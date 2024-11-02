@@ -32,24 +32,24 @@ class SignUpCubit extends Cubit<SignUpState> {
       switch (e.code) {
         case 'email-already-in-use':
           emit(SignUpFirebaseError(
-              message: e.message ?? 'Email already in use'));
+              message: 'Email already in use'));
           break;
         case 'invalid-email':
           emit(SignUpFirebaseError(
-              message: e.message ?? 'Invalid email address'));
+              message: 'Invalid email address'));
           break;
         case 'weak-password':
           emit(SignUpFirebaseError(
-              message: e.message ?? 'Password is not strong enough'));
+              message: 'Password is not strong enough'));
           break;
         case 'operation-not-allowed':
           emit(SignUpFirebaseError(
-            message: e.message ?? 'Operation not allowed',
+            message: 'Operation not allowed',
           ));
           break;
         case 'too-many-requests':
           emit(SignUpFirebaseError(
-            message: e.message ?? 'Too many requests',
+            message: 'Too many requests',
           ));
           break;
         default:

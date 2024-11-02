@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studybean/common/extensions/context_dialog_extension.dart';
+import 'package:studybean/common/extensions/context_error_handling.dart';
 import 'package:studybean/common/extensions/context_theme.dart';
 
 import '../../../../../common/di/get_it.dart';
+import 'bloc/delete_roadmap_cubit/delete_local_roadmap_cubit.dart';
 import 'bloc/get_roadmap_cubit/get_local_roadmap_cubit.dart';
 import 'widgets/roadmap_widget.dart';
 
@@ -13,9 +15,17 @@ class RoadmapLocalPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<GetLocalRoadmapCubit>()..getRoadmaps(),
-      lazy: false,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => getIt<GetLocalRoadmapCubit>()..getRoadmaps(),
+          lazy: false,
+        ),
+        BlocProvider(
+          create: (context) => getIt<DeleteLocalRoadmapCubit>(),
+          lazy: false,
+        ),
+      ],
       child: Scaffold(
         floatingActionButton:
             BlocBuilder<GetLocalRoadmapCubit, GetLocalRoadmapState>(
@@ -169,30 +179,78 @@ class RoadmapLocalPage extends StatelessWidget {
                     ),
                   );
                 }
-                return SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    child: RefreshIndicator(
-                      onRefresh: () async {
+                return BlocListener<DeleteLocalRoadmapCubit,
+                    DeleteLocalRoadmapState>(
+                  listener: (context, state) {
+                    switch(state) {
+                      case DeleteLocalRoadmapInitial():
+                        break;
+                      case DeleteLocalRoadmapSuccess():
                         context.read<GetLocalRoadmapCubit>().getRoadmaps();
-                      },
-                      child: ListView.separated(
-                        itemCount: state.roadmaps.length,
-                        separatorBuilder: (context, index) {
-                          return const SizedBox(
-                            height: 16,
-                          );
+                        break;
+                      case DeleteLocalRoadmapError():
+                        context.handleError(state.error);
+                        break;
+                    }
+                  },
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                      child: RefreshIndicator(
+                        onRefresh: () async {
+                          context.read<GetLocalRoadmapCubit>().getRoadmaps();
                         },
-                        itemBuilder: (context, index) {
-                          final roadmap = state.roadmaps[index];
-                          return RoadmapWidget(
-                            roadmap: roadmap,
-                            onTap: () {
-                              context.push('/local/home/roadmap/${roadmap.id}');
-                            },
-                            onLongPress: () {},
-                          );
-                        },
+                        child: ListView.separated(
+                          itemCount: state.roadmaps.length,
+                          separatorBuilder: (context, index) {
+                            return const SizedBox(
+                              height: 16,
+                            );
+                          },
+                          itemBuilder: (context, index) {
+                            final roadmap = state.roadmaps[index];
+                            return RoadmapWidget(
+                              roadmap: roadmap,
+                              onTap: () {
+                                context
+                                    .push('/local/home/roadmap/${roadmap.id}');
+                              },
+                              onLongPress: () {
+                                showModalBottomSheet(
+                                    context: context,
+                                    builder: (bottomSheetContext) {
+                                      return Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                bottomSheetContext.pop();
+                                                context.showConfirmDialog(
+                                                    title: 'Delete roadmap',
+                                                    message:
+                                                        'Are you sure you want to delete this roadmap?',
+                                                    onConfirm: () {
+                                                      context
+                                                          .read<
+                                                              DeleteLocalRoadmapCubit>()
+                                                          .deleteRoadmap();
+                                                    });
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor: context
+                                                      .theme.colorScheme.error),
+                                              child: const Text('Delete'),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    });
+                              },
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studybean/common/di/get_it.dart';
 import 'package:studybean/common/extensions/context_dialog_extension.dart';
+import 'package:studybean/common/extensions/context_theme.dart';
 import 'package:studybean/features/roadmap/models/duration_unit.dart';
 import 'package:studybean/features/roadmap/views/create_roadmap/bloc/create_roadmap_cubit/create_roadmap_cubit.dart';
 import 'package:studybean/features/roadmap/views/create_roadmap/bloc/create_roadmap_cubit/create_roadmap_with_ai_cubit.dart';
@@ -68,6 +69,7 @@ class _CreateRoadmapPageState extends State<CreateRoadmapPage> {
             children: [
               LinearProgressIndicator(
                 value: _progress,
+                backgroundColor: context.theme.colorScheme.surface,
               ),
               Expanded(
                 child: PageView(

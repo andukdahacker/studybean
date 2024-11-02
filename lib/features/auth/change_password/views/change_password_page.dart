@@ -214,7 +214,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       case ChangePasswordLoading():
                         break;
                       case ChangePasswordSuccess():
-                        context.pop();
+                        context.showConfirmDialog(title: 'Success', message: 'Password changed successfully', onConfirm: () {
+                          context.pop();
+                        });
                         break;
                       case ChangePasswordError():
                         context.showErrorDialog(
