@@ -23,8 +23,9 @@ class DeleteActionResourceSuccess extends DeleteActionResourceState {
 
 class DeleteActionResourceError extends DeleteActionResourceState {
   final Object error;
+  final String resourceId;
 
-  DeleteActionResourceError({required this.error});
+  DeleteActionResourceError({required this.error, required this.resourceId});
   @override
   List<Object?> get props => [error];
 }

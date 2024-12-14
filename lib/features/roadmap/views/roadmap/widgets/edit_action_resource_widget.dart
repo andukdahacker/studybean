@@ -1,4 +1,3 @@
-import 'package:any_link_preview/any_link_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -32,7 +31,10 @@ class _EditActionResourceWidgetState extends State<EditActionResourceWidget> {
 
   final GlobalKey _descriptionKey = GlobalKey();
 
-  late bool isValidLink = widget.resource.url.isNotEmpty;
+  // late bool isValidLink = widget.resource.url.isNotEmpty;
+  // bool isPasting = false;
+  // FilePickerResult? filePickerResult;
+  // bool isChangingResource = false;
 
   @override
   void initState() {
@@ -59,6 +61,8 @@ class _EditActionResourceWidgetState extends State<EditActionResourceWidget> {
     super.dispose();
   }
 
+  void _editResource(BuildContext context) {}
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -81,7 +85,6 @@ class _EditActionResourceWidgetState extends State<EditActionResourceWidget> {
                         EditActionResourceInput(
                           id: widget.resource.id,
                           title: _titleController.text,
-                          url: _linkToResourceController.text,
                           description: _descriptionController.text,
                         ),
                       );
@@ -92,147 +95,275 @@ class _EditActionResourceWidgetState extends State<EditActionResourceWidget> {
           }
         },
         builder: (context, state) {
-          return Stack(children: [
-            Column(
-              children: [
-                const BottomSheetHeaderWidget(),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Form(
-                      key: _formKey,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Title',
-                              style: context.theme.textTheme.bodyMedium,
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            TextFormField(
-                              controller: _titleController,
-                              focusNode: _titleFocusNode,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter a title';
-                                }
-                                return null;
-                              },
-                              onEditingComplete: () {
-                                _titleFocusNode.unfocus();
-                                FocusScope.of(context)
-                                    .requestFocus(_linkToResourceFocusNode);
-                              },
-                            ),
-                            const SizedBox(
-                              height: 16,
-                            ),
-                            const SizedBox(
-                              height: 16,
-                            ),
-                            Text(
-                              'Link to resource',
-                              style: context.theme.textTheme.bodyMedium,
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            TextFormField(
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter a link';
-                                }
-
-                                if (!AnyLinkPreview.isValidLink(value)) {
-                                  return 'Please enter a valid link';
-                                }
-                                return null;
-                              },
-                              controller: _linkToResourceController,
-                              focusNode: _linkToResourceFocusNode,
-                              onChanged: (value) {
-                                final valid = AnyLinkPreview.isValidLink(value);
-                                setState(() {
-                                  isValidLink = valid;
-                                });
-                              },
-                              onEditingComplete: () {
-                                _linkToResourceFocusNode.unfocus();
-                                FocusScope.of(context)
-                                    .requestFocus(_descriptionFocusNode);
-                                Scrollable.ensureVisible(
-                                    _descriptionKey.currentContext!);
-                              },
-                            ),
-                            const SizedBox(
-                              height: 16,
-                            ),
-                            if (isValidLink)
-                              AnyLinkPreview(
-                                link: _linkToResourceController.text,
-                              )
-                            else
-                              Text(
-                                'Link is empty or invalid',
-                                style: context.theme.textTheme.bodyMedium
-                                    ?.copyWith(
-                                  color: Colors.red,
-                                ),
-                              ),
-                            const SizedBox(
-                              height: 32,
-                            ),
-                            Text(
-                              'Description',
-                              style: context.theme.textTheme.bodyMedium,
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            TextFormField(
-                              key: _descriptionKey,
-                              controller: _descriptionController,
-                              focusNode: _descriptionFocusNode,
-                              maxLines: 5,
-                              onEditingComplete: () {
-                                _descriptionFocusNode.unfocus();
-                              },
-                            ),
-                            const SizedBox(
-                              height: 480,
-                            )
-                          ],
+          return Column(
+            children: [
+              BottomSheetHeaderWidget(
+                action: GestureDetector(
+                  onTap: () {
+                    if (_formKey.currentState!.validate()) {
+                      context.read<EditActionResourceCubit>().editResource(
+                        EditActionResourceInput(
+                          id: widget.resource.id,
+                          title: _titleController.text,
+                          description: _descriptionController.text,
                         ),
+                      );
+                    }
+                  },
+                  child: (state is EditActionResourceLoading)
+                      ? const CircularProgressIndicator()
+                      : Text(
+                          'Save',
+                          style: context.theme.textTheme.bodyLarge?.copyWith(
+                              color: context.theme.colorScheme.primary,
+                              fontWeight: FontWeight.bold),
+                        ),
+                ),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Form(
+                    key: _formKey,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Title',
+                            style: context.theme.textTheme.bodyMedium,
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          TextFormField(
+                            controller: _titleController,
+                            focusNode: _titleFocusNode,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a title';
+                              }
+                              return null;
+                            },
+                            onEditingComplete: () {
+                              _titleFocusNode.unfocus();
+                              FocusScope.of(context)
+                                  .requestFocus(_linkToResourceFocusNode);
+                            },
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Text(
+                            'Description',
+                            style: context.theme.textTheme.bodyMedium,
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          TextFormField(
+                            key: _descriptionKey,
+                            controller: _descriptionController,
+                            focusNode: _descriptionFocusNode,
+                            maxLines: 5,
+                            onEditingComplete: () {
+                              _descriptionFocusNode.unfocus();
+                            },
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          // Text(
+                          //   'Resource',
+                          //   style: context.theme.textTheme.bodyMedium,
+                          // ),
+                          // const SizedBox(
+                          //   height: 8,
+                          // ),
+                          // if (!isChangingResource)
+                          //   Row(
+                          //     children: [
+                          //       Expanded(
+                          //         child: Text(
+                          //           widget.resource.url,
+                          //           style: context.theme.textTheme.bodyMedium
+                          //               ?.copyWith(
+                          //             color: context.theme.colorScheme.primary,
+                          //             fontWeight: FontWeight.bold,
+                          //           ),
+                          //         ),
+                          //       ),
+                          //       const SizedBox(
+                          //         width: 16,
+                          //       ),
+                          //       GestureDetector(
+                          //         onTap: () {
+                          //           setState(() {
+                          //             isChangingResource = true;
+                          //           });
+                          //         },
+                          //         child: Icon(
+                          //           Icons.change_circle_rounded,
+                          //           color: context.theme.colorScheme.primary,
+                          //         ),
+                          //       )
+                          //     ],
+                          //   ),
+                          // if (!isPasting &&
+                          //     filePickerResult == null &&
+                          //     isChangingResource)
+                          //   Wrap(
+                          //     spacing: 8,
+                          //     children: ResourceType.values.map((type) {
+                          //       Widget avatar = const SizedBox.shrink();
+                          //       VoidCallback? onPressed;
+                          //
+                          //       switch (type) {
+                          //         case ResourceType.pdf:
+                          //           avatar = const Icon(
+                          //               Icons.picture_as_pdf_rounded);
+                          //           onPressed = () async {
+                          //             final result =
+                          //                 await FilePicker.platform.pickFiles(
+                          //               type: FileType.custom,
+                          //               allowedExtensions: ['pdf'],
+                          //               allowMultiple: false,
+                          //             );
+                          //
+                          //             if (result != null) {
+                          //               setState(() {
+                          //                 filePickerResult = result;
+                          //               });
+                          //             }
+                          //           };
+                          //           break;
+                          //         case ResourceType.websiteLink:
+                          //           avatar = const Icon(Icons.web_rounded);
+                          //           onPressed = () {
+                          //             setState(() {
+                          //               isPasting = true;
+                          //             });
+                          //           };
+                          //           break;
+                          //         case ResourceType.youtubeLink:
+                          //           avatar = const Icon(
+                          //               Icons.youtube_searched_for_rounded);
+                          //           onPressed = () {
+                          //             setState(() {
+                          //               isPasting = true;
+                          //             });
+                          //           };
+                          //           break;
+                          //         case ResourceType.image:
+                          //           avatar = const Icon(Icons.image_rounded);
+                          //           onPressed = () async {
+                          //             final result =
+                          //                 await FilePicker.platform.pickFiles(
+                          //               type: FileType.image,
+                          //               allowMultiple: false,
+                          //             );
+                          //
+                          //             if (result != null) {
+                          //               setState(() {
+                          //                 filePickerResult = result;
+                          //               });
+                          //             }
+                          //           };
+                          //           break;
+                          //       }
+                          //
+                          //       return ActionChip(
+                          //         label: Text(type.label),
+                          //         onPressed: onPressed,
+                          //         avatar: avatar,
+                          //       );
+                          //     }).toList(),
+                          //   ),
+                          // if (filePickerResult != null)
+                          //   Row(
+                          //     children: [
+                          //       Expanded(
+                          //         child: Text(
+                          //           filePickerResult!.files.single.name,
+                          //           style: context.theme.textTheme.bodyMedium
+                          //               ?.copyWith(
+                          //             color: context.theme.colorScheme.primary,
+                          //             fontWeight: FontWeight.bold,
+                          //           ),
+                          //         ),
+                          //       ),
+                          //       const SizedBox(
+                          //         width: 16,
+                          //       ),
+                          //       GestureDetector(
+                          //         onTap: () {
+                          //           setState(() {
+                          //             filePickerResult = null;
+                          //           });
+                          //         },
+                          //         child: Icon(
+                          //           Icons.remove_circle_outline,
+                          //           color: context.theme.colorScheme.error,
+                          //         ),
+                          //       )
+                          //     ],
+                          //   ),
+                          // if (isPasting)
+                          //   Column(
+                          //     children: [
+                          //       Row(
+                          //         children: [
+                          //           Expanded(
+                          //             child: TextFormField(
+                          //               validator: (value) {
+                          //                 if (value == null || value.isEmpty) {
+                          //                   return 'Please enter a link';
+                          //                 }
+                          //
+                          //                 if (!AnyLinkPreview.isValidLink(
+                          //                     value)) {
+                          //                   return 'Please enter a valid link';
+                          //                 }
+                          //
+                          //                 return null;
+                          //               },
+                          //               onChanged: (value) {
+                          //                 final valid =
+                          //                     AnyLinkPreview.isValidLink(value);
+                          //                 setState(() {
+                          //                   isValidLink = valid;
+                          //                 });
+                          //               },
+                          //               controller: _linkToResourceController,
+                          //             ),
+                          //           ),
+                          //           const SizedBox(
+                          //             width: 8,
+                          //           ),
+                          //           GestureDetector(
+                          //             onTap: () {
+                          //               setState(() {
+                          //                 isPasting = false;
+                          //                 _linkToResourceController.text = '';
+                          //               });
+                          //             },
+                          //             child: Icon(
+                          //               Icons.remove_circle_outline_rounded,
+                          //               color: context.theme.colorScheme.error,
+                          //             ),
+                          //           )
+                          //         ],
+                          //       ),
+                          //     ],
+                          //   )
+                        ],
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      context
-                          .read<EditActionResourceCubit>()
-                          .editResource(EditActionResourceInput(
-                          id: widget.resource.id,
-                          title: _titleController.text,
-                          url: _linkToResourceController.text,
-                          description: _descriptionController.text));
-                    }
-                  },
-                  child: const Text('Save'),
-                ),
               ),
-            )
-          ]);
+            ],
+          );
         },
       ),
     );

@@ -29,9 +29,7 @@ class _RoadmapPageState extends State<RoadmapPage>
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) =>
-          getIt<GetRoadmapCubit>()
-            ..getRoadmaps(),
+          create: (context) => getIt<GetRoadmapCubit>()..getRoadmaps(),
           lazy: false,
         ),
         BlocProvider(
@@ -111,7 +109,7 @@ class _RoadmapPageState extends State<RoadmapPage>
 
                 return BlocListener<DeleteRoadmapCubit, DeleteRoadmapState>(
                   listener: (context, state) {
-                    switch(state) {
+                    switch (state) {
                       case DeleteRoadmapInitial():
                         break;
                       case DeleteRoadmapLoading():
@@ -163,13 +161,13 @@ class _RoadmapPageState extends State<RoadmapPage>
                                                 context.showConfirmDialog(
                                                     title: 'Delete roadmap',
                                                     message:
-                                                    'Are you sure you want to delete this roadmap?',
+                                                        'Are you sure you want to delete this roadmap?',
                                                     onConfirm: () {
                                                       context
                                                           .read<
-                                                          DeleteRoadmapCubit>()
+                                                              DeleteRoadmapCubit>()
                                                           .deleteRoadmap(
-                                                          roadmap.id);
+                                                              roadmap.id);
                                                     });
                                               },
                                               style: ElevatedButton.styleFrom(

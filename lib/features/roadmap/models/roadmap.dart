@@ -406,3 +406,15 @@ class ActionResource {
         'url': url,
       };
 }
+
+enum ResourceType {
+  pdf(label: 'Select a PDF'),
+  image(label: 'Select an image'),
+  websiteLink(label: 'Paste a website link'),
+  youtubeLink(label: 'Paste a YouTube link'),
+  ;
+
+  const ResourceType({required this.label});
+
+  final String label;
+}

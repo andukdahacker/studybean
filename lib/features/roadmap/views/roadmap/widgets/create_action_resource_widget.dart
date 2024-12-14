@@ -1,4 +1,5 @@
 import 'package:any_link_preview/any_link_preview.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +9,7 @@ import 'package:studybean/common/extensions/context_theme.dart';
 
 import '../../../../../common/widgets/bottom_sheet_header_widget.dart';
 import '../../../models/create_action_resource_input.dart';
+import '../../../models/roadmap.dart';
 import '../bloc/create_action_resource_cubit/create_action_resource_cubit.dart';
 
 class CreateActionResourceWidget extends StatefulWidget {
@@ -24,23 +26,26 @@ class _CreateActionResourceWidgetState
     extends State<CreateActionResourceWidget> {
   late final GlobalKey<FormState> _formKey;
   late final TextEditingController _titleController;
-  late final TextEditingController _linkToResourceController;
   late final TextEditingController _descriptionController;
+  late final TextEditingController _linkController;
   late final FocusNode _titleFocusNode;
   late final FocusNode _linkToResourceFocusNode;
   late final FocusNode _descriptionFocusNode;
 
   final GlobalKey _descriptionKey = GlobalKey();
 
+  bool isPasting = false;
   bool isValidLink = false;
+
+  FilePickerResult? filePickerResult;
 
   @override
   void initState() {
     super.initState();
     _formKey = GlobalKey<FormState>();
     _titleController = TextEditingController();
-    _linkToResourceController = TextEditingController();
     _descriptionController = TextEditingController();
+    _linkController = TextEditingController();
     _titleFocusNode = FocusNode();
     _linkToResourceFocusNode = FocusNode();
     _descriptionFocusNode = FocusNode();
@@ -49,12 +54,38 @@ class _CreateActionResourceWidgetState
   @override
   void dispose() {
     _titleController.dispose();
-    _linkToResourceController.dispose();
     _descriptionController.dispose();
+    _linkController.dispose();
     _titleFocusNode.dispose();
     _linkToResourceFocusNode.dispose();
     _descriptionFocusNode.dispose();
     super.dispose();
+  }
+
+  void _createResource(BuildContext context) {
+    if (filePickerResult != null) {
+      context
+          .read<CreateActionResourceCubit>()
+          .createResourceWithFile(
+        CreateActionResourceInput(
+          title: _titleController.text,
+          description: _descriptionController.text,
+          actionId: widget.actionId,
+        ),
+        filePickerResult!,
+      );
+    } else {
+      context
+          .read<CreateActionResourceCubit>()
+          .createResource(
+        CreateActionResourceInput(
+          title: _titleController.text,
+          url: _linkController.text,
+          description: _descriptionController.text,
+          actionId: widget.actionId,
+        ),
+      );
+    }
   }
 
   @override
@@ -63,8 +94,7 @@ class _CreateActionResourceWidgetState
       create: (context) => getIt<CreateActionResourceCubit>(),
       child: Column(
         children: [
-          BlocConsumer<CreateActionResourceCubit,
-              CreateActionResourceState>(
+          BlocConsumer<CreateActionResourceCubit, CreateActionResourceState>(
             listener: (context, state) {
               switch (state) {
                 case CreateActionResourceInitial():
@@ -78,16 +108,7 @@ class _CreateActionResourceWidgetState
                       title: 'Failed to add resource',
                       message: 'Something went wrong. Please try again later',
                       onRetry: () {
-                        context
-                            .read<CreateActionResourceCubit>()
-                            .createResource(
-                          CreateActionResourceInput(
-                            title: _titleController.text,
-                            url: _linkToResourceController.text,
-                            description: _descriptionController.text,
-                            actionId: widget.actionId,
-                          ),
-                        );
+                        _createResource(context);
                         context.pop();
                       });
                   break;
@@ -98,26 +119,17 @@ class _CreateActionResourceWidgetState
                 action: GestureDetector(
                   onTap: () {
                     if (_formKey.currentState!.validate()) {
-                      final input = CreateActionResourceInput(
-                        title: _titleController.text,
-                        url: _linkToResourceController.text,
-                        description: _descriptionController.text,
-                        actionId: widget.actionId,
-                      );
-
-                      context
-                          .read<CreateActionResourceCubit>()
-                          .createResource(input);
+                      _createResource(context);
                     }
                   },
                   child: (state is CreateActionResourceLoading)
                       ? const CircularProgressIndicator()
                       : Text(
-                    'Create',
-                    style: context.theme.textTheme.bodyLarge?.copyWith(
-                        color: context.theme.colorScheme.primary,
-                        fontWeight: FontWeight.bold),
-                  ),
+                          'Create',
+                          style: context.theme.textTheme.bodyLarge?.copyWith(
+                              color: context.theme.colorScheme.primary,
+                              fontWeight: FontWeight.bold),
+                        ),
                 ),
               );
             },
@@ -156,61 +168,6 @@ class _CreateActionResourceWidgetState
                       const SizedBox(
                         height: 16,
                       ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Text(
-                        'Link to resource',
-                        style: context.theme.textTheme.bodyMedium,
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      TextFormField(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a link';
-                          }
-
-                          if (!AnyLinkPreview.isValidLink(value)) {
-                            return 'Please enter a valid link';
-                          }
-
-                          return null;
-                        },
-                        controller: _linkToResourceController,
-                        focusNode: _linkToResourceFocusNode,
-                        onChanged: (value) {
-                          final valid = AnyLinkPreview.isValidLink(value);
-                          setState(() {
-                            isValidLink = valid;
-                          });
-                        },
-                        onEditingComplete: () {
-                          _linkToResourceFocusNode.unfocus();
-                          FocusScope.of(context)
-                              .requestFocus(_descriptionFocusNode);
-                          Scrollable.ensureVisible(
-                              _descriptionKey.currentContext!);
-                        },
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      if (isValidLink)
-                        AnyLinkPreview(
-                          link: _linkToResourceController.text,
-                        )
-                      else
-                        Text(
-                          'Link is empty or invalid',
-                          style: context.theme.textTheme.bodyMedium?.copyWith(
-                            color: Colors.red,
-                          ),
-                        ),
-                      const SizedBox(
-                        height: 32,
-                      ),
                       Text(
                         'Description',
                         style: context.theme.textTheme.bodyMedium,
@@ -223,13 +180,176 @@ class _CreateActionResourceWidgetState
                         controller: _descriptionController,
                         focusNode: _descriptionFocusNode,
                         maxLines: 5,
-                        onEditingComplete: () {
-                          _descriptionFocusNode.unfocus();
-                        },
                       ),
                       const SizedBox(
-                        height: 480,
-                      )
+                        height: 16,
+                      ),
+                      Text(
+                        'Resource',
+                        style: context.theme.textTheme.bodyMedium,
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      if (!isPasting && filePickerResult == null)
+                        Wrap(
+                          spacing: 8,
+                          children: ResourceType.values.map((type) {
+                            Widget avatar = const SizedBox.shrink();
+                            VoidCallback? onPressed;
+
+                            switch (type) {
+                              case ResourceType.pdf:
+                                avatar =
+                                    const Icon(Icons.picture_as_pdf_rounded);
+                                onPressed = () async {
+                                  final result =
+                                      await FilePicker.platform.pickFiles(
+                                    type: FileType.custom,
+                                    allowedExtensions: ['pdf'],
+                                    allowMultiple: false,
+                                  );
+
+                                  if (result != null) {
+                                    setState(() {
+                                      filePickerResult = result;
+                                    });
+                                  }
+                                };
+                                break;
+                              case ResourceType.websiteLink:
+                                avatar = const Icon(Icons.web_rounded);
+                                onPressed = () {
+                                  setState(() {
+                                    isPasting = true;
+                                  });
+                                };
+                                break;
+                              case ResourceType.youtubeLink:
+                                avatar = const Icon(
+                                    Icons.youtube_searched_for_rounded);
+                                onPressed = () {
+                                  setState(() {
+                                    isPasting = true;
+                                  });
+                                };
+                                break;
+                              case ResourceType.image:
+                                avatar = const Icon(Icons.image_rounded);
+                                onPressed = () async {
+                                  final result =
+                                      await FilePicker.platform.pickFiles(
+                                    type: FileType.image,
+                                    allowMultiple: false,
+                                  );
+
+                                  if (result != null) {
+                                    setState(() {
+                                      filePickerResult = result;
+                                    });
+                                  }
+                                };
+                                break;
+                            }
+
+                            return ActionChip(
+                              label: Text(type.label),
+                              onPressed: onPressed,
+                              avatar: avatar,
+                            );
+                          }).toList(),
+                        ),
+                      if (filePickerResult != null)
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                filePickerResult!.files.single.name,
+                                style: context.theme.textTheme.bodyMedium
+                                    ?.copyWith(
+                                  color: context.theme.colorScheme.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 16,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  filePickerResult = null;
+                                });
+                              },
+                              child: Icon(
+                                Icons.remove_circle_outline,
+                                color: context.theme.colorScheme.error,
+                              ),
+                            )
+                          ],
+                        ),
+                      if (isPasting)
+                        Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextFormField(
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter a link';
+                                      }
+
+                                      if (!AnyLinkPreview.isValidLink(value)) {
+                                        return 'Please enter a valid link';
+                                      }
+
+                                      return null;
+                                    },
+                                    onChanged: (value) {
+                                      final valid =
+                                          AnyLinkPreview.isValidLink(value);
+                                      setState(() {
+                                        isValidLink = valid;
+                                      });
+                                    },
+                                    controller: _linkController,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      isPasting = false;
+                                      _linkController.text = '';
+                                    });
+                                  },
+                                  child: Icon(
+                                    Icons.remove_circle_outline_rounded,
+                                    color: context.theme.colorScheme.error,
+                                  ),
+                                )
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            if (isValidLink)
+                              AnyLinkPreview(
+                                link: _linkController.text,
+                              )
+                            else
+                              Text(
+                                'Link is empty or invalid',
+                                style: context.theme.textTheme.bodyMedium
+                                    ?.copyWith(
+                                  color: Colors.red,
+                                ),
+                              ),
+                          ],
+                        )
                     ],
                   ),
                 ),

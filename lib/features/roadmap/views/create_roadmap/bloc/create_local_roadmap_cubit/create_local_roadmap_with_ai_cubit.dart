@@ -28,6 +28,7 @@ class CreateLocalRoadmapWithAiCubit
       GenerateMilestoneWithAiInput input) async {
     try {
       emit(CreateLocalRoadmapWithAiLoading());
+      await _roadmapLocalRepository.deleteAllRoadmap();
       final generatedMilestones =
           await _roadmapRepository.generateMilestoneWithAI(input);
       final roadmap = await _roadmapLocalRepository.createRoadmapWithAi(

@@ -25,7 +25,6 @@ class ChooseSubjectWidget extends StatefulWidget {
 class _ChooseSubjectWidgetState extends State<ChooseSubjectWidget> {
   late final TextEditingController _textEditingController;
   final _focusNode = FocusNode();
-  bool _keyboardVisible = false;
   Timer? _debounce;
 
   bool canNext = false;
@@ -33,11 +32,6 @@ class _ChooseSubjectWidgetState extends State<ChooseSubjectWidget> {
   @override
   void initState() {
     _textEditingController = TextEditingController()..text = widget.selectedSubjectName ?? '';
-    _focusNode.addListener(() {
-      setState(() {
-        _keyboardVisible = _focusNode.hasFocus;
-      });
-    });
     super.initState();
   }
 
@@ -191,7 +185,7 @@ class _ChooseSubjectWidgetState extends State<ChooseSubjectWidget> {
                 ),
               ),
             ),
-            if (!_keyboardVisible && _textEditingController.text.isNotEmpty)
+            if (_textEditingController.text.isNotEmpty)
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studybean/common/extensions/context_dialog_extension.dart';
-import 'package:studybean/features/roadmap/models/duration_unit.dart';
+import 'package:studybean/common/extensions/context_theme.dart';
 import 'package:studybean/features/roadmap/models/generate_milestone_with_ai_input.dart';
 import 'package:studybean/features/roadmap/views/create_roadmap/bloc/check_user_credit/check_local_user_credit_cubit.dart';
 import 'package:studybean/features/roadmap/views/create_roadmap/bloc/create_local_roadmap_cubit/create_local_roadmap_cubit.dart';
@@ -28,8 +28,6 @@ class _CreateRoadmapLocalPageState extends State<CreateRoadmapLocalPage> {
   double _progress = 1 / 3;
 
   String? subjectName;
-  int _goalDuration = 1;
-  DurationUnit _goalDurationUnit = DurationUnit.day;
   String? _goal;
 
   @override
@@ -62,6 +60,7 @@ class _CreateRoadmapLocalPageState extends State<CreateRoadmapLocalPage> {
           children: [
             LinearProgressIndicator(
               value: _progress,
+              backgroundColor: context.theme.colorScheme.surface,
             ),
             Expanded(
               child: PageView(
@@ -85,7 +84,7 @@ class _CreateRoadmapLocalPageState extends State<CreateRoadmapLocalPage> {
                       );
                     },
                   ),
-                  ChooseGoalsDurationWidget(
+                  DescribeGoalsWidget(
                     subjectName: subjectName,
                     onNext: () {
                       _pageController.nextPage(
@@ -104,15 +103,7 @@ class _CreateRoadmapLocalPageState extends State<CreateRoadmapLocalPage> {
                         _goal = goal;
                       });
                     },
-                    onDurationChanged: (duration, unit) {
-                      setState(() {
-                        _goalDuration = duration;
-                        _goalDurationUnit = unit;
-                      });
-                    },
                     goal: _goal,
-                    selectedGoalDuration: _goalDuration,
-                    selectedGoalDurationUnit: _goalDurationUnit,
                   ),
                   MultiBlocProvider(
                     providers: [
@@ -191,9 +182,7 @@ class _CreateRoadmapLocalPageState extends State<CreateRoadmapLocalPage> {
                                   ? state.totalCredits
                                   : 0,
                               goal: _goal,
-                              selectedGoalDuration: _goalDuration,
                               subjectName: subjectName,
-                              selectedGoalDurationUnit: _goalDurationUnit,
                               onBack: () {
                                 _pageController.previousPage(
                                   duration: const Duration(milliseconds: 300),
@@ -216,8 +205,6 @@ class _CreateRoadmapLocalPageState extends State<CreateRoadmapLocalPage> {
                                     .createLocalRoadmapWithAI(
                                       GenerateMilestoneWithAiInput(
                                         subjectName: subjectName ?? '',
-                                        duration: _goalDuration,
-                                        durationUnit: _goalDurationUnit,
                                         goal: _goal ?? '',
                                       ),
                                     );

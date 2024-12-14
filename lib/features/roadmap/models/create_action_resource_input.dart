@@ -1,12 +1,12 @@
 class CreateActionResourceInput {
   final String title;
-  final String url;
+  final String? url;
   final String? description;
   final String actionId;
 
   CreateActionResourceInput({
     required this.title,
-    required this.url,
+    this.url,
     this.description,
     required this.actionId,
   });
@@ -14,7 +14,7 @@ class CreateActionResourceInput {
   Map<String, String> toMap() {
     return {
       'title': title,
-      'url': url,
+      'url': url ?? '',
       'description': description ?? '',
       'actionId': actionId,
     };

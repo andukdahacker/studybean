@@ -18,7 +18,7 @@ class DeleteActionResourceCubit extends Cubit<DeleteActionResourceState> {
       emit(DeleteActionResourceSuccess(id: id));
     } catch (e, stackTrace) {
       addError(e, stackTrace);
-      emit(DeleteActionResourceError(error: e));
+      emit(DeleteActionResourceError(error: e, resourceId: id));
     }
   }
 }

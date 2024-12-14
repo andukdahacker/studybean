@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:studybean/common/extensions/context_theme.dart';
-import 'package:studybean/features/roadmap/models/duration_unit.dart';
 
-class ChooseGoalsDurationWidget extends StatefulWidget {
-  const ChooseGoalsDurationWidget({
+class DescribeGoalsWidget extends StatefulWidget {
+  const DescribeGoalsWidget({
     super.key,
     required this.onBack,
-    required this.onDurationChanged,
-    required this.selectedGoalDuration,
-    required this.selectedGoalDurationUnit,
     required this.goal,
     required this.onGoalChanged,
     required this.onNext,
@@ -16,54 +12,34 @@ class ChooseGoalsDurationWidget extends StatefulWidget {
   });
 
   final VoidCallback onBack;
-  final Function(int, DurationUnit) onDurationChanged;
-  final int selectedGoalDuration;
-  final DurationUnit selectedGoalDurationUnit;
   final Function(String) onGoalChanged;
   final String? goal;
   final VoidCallback onNext;
   final String? subjectName;
 
   @override
-  State<ChooseGoalsDurationWidget> createState() =>
-      _ChooseGoalsDurationWidgetState();
+  State<DescribeGoalsWidget> createState() =>
+      _DescribeGoalsWidgetState();
 }
 
-class _ChooseGoalsDurationWidgetState extends State<ChooseGoalsDurationWidget> {
+class _DescribeGoalsWidgetState extends State<DescribeGoalsWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late final TextEditingController _goalController;
-  late final TextEditingController _durationController;
 
   final _goalFocusNode = FocusNode();
-  final _durationFocusNode = FocusNode();
 
-  bool _keyboardVisible = false;
 
   @override
   void initState() {
     _goalController = TextEditingController()..text = widget.goal ?? '';
-    _durationController = TextEditingController()
-      ..text = widget.selectedGoalDuration.toString();
-    _goalFocusNode.addListener(() {
-      setState(() {
-        _keyboardVisible = _goalFocusNode.hasFocus;
-      });
-    });
 
-    _durationFocusNode.addListener(() {
-      setState(() {
-        _keyboardVisible = _durationFocusNode.hasFocus;
-      });
-    });
     super.initState();
   }
 
   @override
   void dispose() {
     _goalController.dispose();
-    _durationController.dispose();
     _goalFocusNode.dispose();
-    _durationFocusNode.dispose();
     super.dispose();
   }
 
@@ -119,7 +95,6 @@ class _ChooseGoalsDurationWidgetState extends State<ChooseGoalsDurationWidget> {
                   onEditingComplete: () {
                     _formKey.currentState?.validate();
                     _goalFocusNode.unfocus();
-                    _durationFocusNode.requestFocus();
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -129,6 +104,8 @@ class _ChooseGoalsDurationWidgetState extends State<ChooseGoalsDurationWidget> {
                     return null;
                   },
                   controller: _goalController,
+                  minLines: 3,
+                  maxLines: 10,
                   onChanged: (value) {
                     widget.onGoalChanged.call(value);
                   },
@@ -138,73 +115,10 @@ class _ChooseGoalsDurationWidgetState extends State<ChooseGoalsDurationWidget> {
                         hintText: 'Take a test, acquire a new skill, ...',
                       ),
                 ),
-                const SizedBox(
-                  height: 8,
-                ),
-                Text(
-                  'and I must achieve it within...',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        focusNode: _durationFocusNode,
-                        controller: _durationController,
-                        onChanged: (value) {
-                          if (value.isEmpty) return;
-                          widget.onDurationChanged.call(
-                            int.parse(value),
-                            widget.selectedGoalDurationUnit,
-                          );
-                        },
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration()
-                            .applyDefaults(context.theme.inputDecorationTheme)
-                            .copyWith(
-                              hintText: '3',
-                            ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: DropdownMenu<DurationUnit>(
-                        initialSelection: widget.selectedGoalDurationUnit,
-                        onSelected: (unit) {
-                          if (unit == null) return;
-
-                          widget.onDurationChanged.call(
-                            int.parse(_durationController.text),
-                            unit,
-                          );
-                        },
-                        dropdownMenuEntries: DurationUnit.values
-                            .map(
-                              (e) => DropdownMenuEntry<DurationUnit>(
-                                value: e,
-                                label: e.name,
-                              ),
-                            )
-                            .toList(),
-                      ),
-                    ),
-                    const Expanded(flex: 2, child: SizedBox.shrink())
-                  ],
-                ),
               ],
             ),
           ),
         ),
-        if (!_keyboardVisible)
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
@@ -214,11 +128,6 @@ class _ChooseGoalsDurationWidgetState extends State<ChooseGoalsDurationWidget> {
                   if (!(_formKey.currentState?.validate() ?? false)) {
                     return;
                   }
-                  widget.onDurationChanged.call(
-                    int.parse(_durationController.text),
-                    widget.selectedGoalDurationUnit,
-                  );
-
                   widget.onNext.call();
                 },
                 child: const Text('Next'),

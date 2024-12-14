@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:studybean/common/extensions/context_dialog_extension.dart';
 
-import '../../../models/duration_unit.dart';
-
 class ChooseCreateRoadmapMethodWidget extends StatefulWidget {
   const ChooseCreateRoadmapMethodWidget({
     super.key,
     required this.onBack,
     required this.subjectName,
-    required this.selectedGoalDuration,
-    required this.selectedGoalDurationUnit,
     required this.goal,
     required this.onCreateRoadmapManually,
     required this.onCreateRoadmapWithAI,
@@ -18,8 +14,6 @@ class ChooseCreateRoadmapMethodWidget extends StatefulWidget {
 
   final VoidCallback onBack;
   final String? subjectName;
-  final int selectedGoalDuration;
-  final DurationUnit selectedGoalDurationUnit;
   final String? goal;
   final VoidCallback onCreateRoadmapManually;
   final VoidCallback onCreateRoadmapWithAI;

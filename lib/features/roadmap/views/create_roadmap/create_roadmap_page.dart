@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:studybean/common/di/get_it.dart';
 import 'package:studybean/common/extensions/context_dialog_extension.dart';
 import 'package:studybean/common/extensions/context_theme.dart';
-import 'package:studybean/features/roadmap/models/duration_unit.dart';
 import 'package:studybean/features/roadmap/views/create_roadmap/bloc/create_roadmap_cubit/create_roadmap_cubit.dart';
 import 'package:studybean/features/roadmap/views/create_roadmap/bloc/create_roadmap_cubit/create_roadmap_with_ai_cubit.dart';
 import 'package:studybean/features/roadmap/views/create_roadmap/widgets/choose_create_roadmap_method.dart';
@@ -25,8 +24,6 @@ class _CreateRoadmapPageState extends State<CreateRoadmapPage> {
   double _progress = 1 / 3;
 
   String? _subject;
-  int _goalDuration = 1;
-  DurationUnit _goalDurationUnit = DurationUnit.day;
   String? _goal;
 
   @override
@@ -93,7 +90,7 @@ class _CreateRoadmapPageState extends State<CreateRoadmapPage> {
                         });
                       },
                     ),
-                    ChooseGoalsDurationWidget(
+                    DescribeGoalsWidget(
                       subjectName: _subject,
                       onNext: () {
                         _pageController.nextPage(
@@ -112,15 +109,8 @@ class _CreateRoadmapPageState extends State<CreateRoadmapPage> {
                           _goal = goal;
                         });
                       },
-                      onDurationChanged: (duration, unit) {
-                        setState(() {
-                          _goalDuration = duration;
-                          _goalDurationUnit = unit;
-                        });
-                      },
+
                       goal: _goal,
-                      selectedGoalDuration: _goalDuration,
-                      selectedGoalDurationUnit: _goalDurationUnit,
                     ),
                     BlocConsumer<CreateRoadmapWithAiCubit,
                         CreateRoadmapWithAiState>(
@@ -148,8 +138,6 @@ class _CreateRoadmapPageState extends State<CreateRoadmapPage> {
                                     CreateRoadmapInput(
                                       subjectName: _subject ?? '',
                                       goal: _goal ?? '',
-                                      duration: _goalDuration,
-                                      durationUnit: _goalDurationUnit,
                                     ),
                                   );
                                 });
@@ -183,8 +171,6 @@ class _CreateRoadmapPageState extends State<CreateRoadmapPage> {
                                         CreateRoadmapInput(
                                           subjectName: _subject ?? '',
                                           goal: _goal ?? '',
-                                          duration: _goalDuration,
-                                          durationUnit: _goalDurationUnit,
                                         ),
                                       );
                                     });
@@ -194,9 +180,7 @@ class _CreateRoadmapPageState extends State<CreateRoadmapPage> {
                           builder: (context, createRoadmapState) {
                             return ChooseCreateRoadmapMethodWidget(
                               goal: _goal,
-                              selectedGoalDuration: _goalDuration,
                               subjectName: _subject,
-                              selectedGoalDurationUnit: _goalDurationUnit,
                               onBack: () {
                                 _pageController.previousPage(
                                   duration: const Duration(milliseconds: 300),
@@ -210,8 +194,6 @@ class _CreateRoadmapPageState extends State<CreateRoadmapPage> {
                                   CreateRoadmapInput(
                                     subjectName: _subject ?? '',
                                     goal: _goal ?? '',
-                                    duration: _goalDuration,
-                                    durationUnit: _goalDurationUnit,
                                   ),
                                 );
                               },
@@ -222,8 +204,6 @@ class _CreateRoadmapPageState extends State<CreateRoadmapPage> {
                                   CreateRoadmapInput(
                                     subjectName: _subject ?? '',
                                     goal: _goal ?? '',
-                                    duration: _goalDuration,
-                                    durationUnit: _goalDurationUnit,
                                   ),
                                 );
                               },

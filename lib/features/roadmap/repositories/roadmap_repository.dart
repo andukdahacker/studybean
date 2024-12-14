@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:http_interceptor/http/http_methods.dart';
+import 'package:http_interceptor/http_interceptor.dart';
 import 'package:studybean/features/roadmap/models/create_action_input.dart';
 import 'package:studybean/features/roadmap/models/create_roadmap_input.dart';
 import 'package:studybean/features/roadmap/models/edit_action_resource_input.dart';
@@ -18,6 +20,23 @@ class RoadmapRepository {
   final APIClient _client;
 
   RoadmapRepository(this._client);
+
+  Future<ActionResource> uploadResourceFile(
+      CreateActionResourceInput input, String filePath, String fileName) async {
+    final response = await _client.call(
+      HttpMethod.POST,
+      path: '/roadmaps/resource/uploadFile',
+      files: [await MultipartFile.fromPath('file', filePath)],
+      body: <String, String>{
+        'fileName': fileName,
+        'title': input.title,
+        'description': input.description ?? '',
+        'actionId': input.actionId
+      },
+    );
+
+    return ActionResource.fromJson(response.data!);
+  }
 
   Future<void> deleteRoadmap(String id) async {
     await _client.call(HttpMethod.DELETE, path: '/roadmaps', body: {'id': id});
@@ -197,19 +216,21 @@ class RoadmapRepository {
   }
 
   Future<void> deleteResource(String id) async {
-    await _client.call(HttpMethod.DELETE, path: '/roadmaps/resource/$id');
+    await _client
+        .call(HttpMethod.DELETE, path: '/roadmaps/resource/$id', body: {});
   }
 
   Future<List<Roadmap>> uploadLocalRoadmaps(List<Roadmap> roadmaps) async {
-    final response = await _client.call(HttpMethod.POST,
-        path: '/roadmaps/uploadLocalRoadmaps', body: {
-          'roadmaps': roadmaps.map((e) => e.toMap()).toList(),
-        });
+    final response = await _client
+        .call(HttpMethod.POST, path: '/roadmaps/uploadLocalRoadmaps', body: {
+      'roadmaps': roadmaps.map((e) => e.toMap()).toList(),
+    });
 
     if (response.data == null) {
       throw Exception('Failed to upload roadmaps');
     }
 
-    return List<Roadmap>.from(response.data!['roadmaps'].map((x) => Roadmap.fromJson(x)));
+    return List<Roadmap>.from(
+        response.data!['roadmaps'].map((x) => Roadmap.fromJson(x)));
   }
 }

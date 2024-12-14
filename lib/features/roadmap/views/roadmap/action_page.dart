@@ -6,6 +6,7 @@ import 'package:studybean/common/extensions/context_dialog_extension.dart';
 import 'package:studybean/common/extensions/context_theme.dart';
 import 'package:studybean/features/roadmap/models/roadmap.dart';
 
+import '../../../../common/widgets/bottom_sheet_header_widget.dart';
 import '../../../splash/error_page.dart';
 import '../../../splash/loading_page.dart';
 import 'bloc/delete_action_cubit/delete_action_cubit.dart';
@@ -16,6 +17,7 @@ import 'widgets/create_action_resource_widget.dart';
 import 'widgets/edit_action_resource_widget.dart';
 import 'widgets/edit_action_widget.dart';
 import 'widgets/action_resource_widget.dart';
+import 'package:file_picker/file_picker.dart';
 
 class ActionPage extends StatefulWidget {
   const ActionPage({super.key, required this.actionId});
@@ -44,15 +46,15 @@ class _ActionPageState extends State<ActionPage> {
         ),
       ],
       child: BlocBuilder<GetActionCubit, GetActionState>(
-        builder: (getLocalActionContext, getLocalActionState) {
-          switch (getLocalActionState) {
+        builder: (getActionContext, getActionState) {
+          switch (getActionState) {
             case GetActionInitial():
             case GetActionLoading():
               return const LoadingPage();
             case GetActionSuccess():
               return BlocConsumer<DeleteActionCubit, DeleteActionState>(
-                listener: (deleteLocalActionContext, deleteLocalActionState) {
-                  switch (deleteLocalActionState) {
+                listener: (deleteActionContext, deleteActionState) {
+                  switch (deleteActionState) {
                     case DeleteActionInitial():
                     case DeleteActionLoading():
                       break;
@@ -64,14 +66,14 @@ class _ActionPageState extends State<ActionPage> {
                           title: 'Failed to delete action',
                           message:
                               'Something went wrong, please try again later',
-                          onRetry: () => deleteLocalActionContext
+                          onRetry: () => deleteActionContext
                               .read<DeleteActionCubit>()
                               .deleteAction(widget.actionId));
                       break;
                   }
                 },
-                builder: (deleteLocalActionContext, deleteLocalActionState) {
-                  if (deleteLocalActionState is DeleteActionLoading) {
+                builder: (deleteActionContext, deleteActionState) {
+                  if (deleteActionState is DeleteActionLoading) {
                     return const LoadingPage();
                   }
 
@@ -80,17 +82,17 @@ class _ActionPageState extends State<ActionPage> {
                       actions: [
                         IconButton(
                           onPressed: () async {
-                            final updatedAction = await deleteLocalActionContext
+                            final updatedAction = await deleteActionContext
                                 .showBottomSheet<MilestoneAction>(
                               builder: (context) => EditActionWidget(
-                                action: getLocalActionState.action,
+                                action: getActionState.action,
                               ),
                               heightRatio: 1,
                             );
 
                             if (updatedAction != null &&
-                                deleteLocalActionContext.mounted) {
-                              deleteLocalActionContext
+                                deleteActionContext.mounted) {
+                              deleteActionContext
                                   .read<GetActionCubit>()
                                   .updateAction(updatedAction);
                             }
@@ -101,12 +103,12 @@ class _ActionPageState extends State<ActionPage> {
                         ),
                         IconButton(
                           onPressed: () {
-                            deleteLocalActionContext.showConfirmDialog(
+                            deleteActionContext.showConfirmDialog(
                               title: 'Delete action',
                               message:
                                   'Are you sure you want to delete this action?',
                               onConfirm: () {
-                                deleteLocalActionContext
+                                deleteActionContext
                                     .read<DeleteActionCubit>()
                                     .deleteAction(widget.actionId);
                               },
@@ -114,8 +116,7 @@ class _ActionPageState extends State<ActionPage> {
                           },
                           icon: Icon(
                             Icons.delete_rounded,
-                            color: deleteLocalActionContext
-                                .theme.colorScheme.error,
+                            color: deleteActionContext.theme.colorScheme.error,
                           ),
                         ),
                       ],
@@ -126,12 +127,12 @@ class _ActionPageState extends State<ActionPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            getLocalActionState.action.name,
-                            style: deleteLocalActionContext
+                            getActionState.action.name,
+                            style: deleteActionContext
                                 .theme.textTheme.headlineLarge
                                 ?.copyWith(
                               fontWeight: FontWeight.bold,
-                              decoration: getLocalActionState.action.completed
+                              decoration: getActionState.action.completed
                                   ? TextDecoration.lineThrough
                                   : null,
                             ),
@@ -163,7 +164,7 @@ class _ActionPageState extends State<ActionPage> {
                               return Row(
                                 children: [
                                   Text(
-                                    'Estimated time: ${getLocalActionState.action.duration} ${getLocalActionState.action.durationUnit.value}',
+                                    'Estimated time: ${getActionState.action.duration} ${getActionState.action.durationUnit.value}',
                                     style: context.theme.textTheme.bodyMedium
                                         ?.copyWith(color: Colors.grey),
                                   ),
@@ -173,13 +174,12 @@ class _ActionPageState extends State<ActionPage> {
                                       context
                                           .read<MarkActionCompleteCubit>()
                                           .updateActionComplete(
-                                            getLocalActionState.action.id,
-                                            !getLocalActionState
-                                                .action.completed,
+                                            getActionState.action.id,
+                                            !getActionState.action.completed,
                                           );
                                     },
                                     child: Text(
-                                      getLocalActionState.action.completed
+                                      getActionState.action.completed
                                           ? 'Undo mark as complete'
                                           : 'Mark as complete',
                                       style: context.theme.textTheme.bodyMedium
@@ -197,7 +197,7 @@ class _ActionPageState extends State<ActionPage> {
                           ),
                           Text(
                             'Description',
-                            style: deleteLocalActionContext
+                            style: deleteActionContext
                                 .theme.textTheme.bodyMedium
                                 ?.copyWith(fontWeight: FontWeight.bold),
                           ),
@@ -205,10 +205,10 @@ class _ActionPageState extends State<ActionPage> {
                             height: 8,
                           ),
                           Text(
-                            getLocalActionState.action.description ??
+                            getActionState.action.description ??
                                 'No description',
-                            style: deleteLocalActionContext
-                                .theme.textTheme.bodyMedium,
+                            style:
+                                deleteActionContext.theme.textTheme.bodyMedium,
                           ),
                           const SizedBox(
                             height: 32,
@@ -217,7 +217,7 @@ class _ActionPageState extends State<ActionPage> {
                             children: [
                               Text(
                                 'Resources',
-                                style: deleteLocalActionContext
+                                style: deleteActionContext
                                     .theme.textTheme.bodyMedium
                                     ?.copyWith(fontWeight: FontWeight.bold),
                               ),
@@ -227,28 +227,28 @@ class _ActionPageState extends State<ActionPage> {
                                   IconButton(
                                     onPressed: () async {
                                       final resource =
-                                          await deleteLocalActionContext
+                                          await deleteActionContext
                                               .showBottomSheet<ActionResource>(
                                         heightRatio: 1,
                                         builder: (context) =>
                                             CreateActionResourceWidget(
-                                          actionId:
-                                              getLocalActionState.action.id,
+                                          actionId: getActionState.action.id,
                                         ),
                                       );
 
                                       if (resource != null &&
-                                          deleteLocalActionContext.mounted) {
-                                        deleteLocalActionContext
+                                          deleteActionContext.mounted) {
+                                        deleteActionContext
                                             .read<GetActionCubit>()
                                             .addActionResource(resource);
                                       }
+
                                     },
                                     icon: Row(
                                       children: [
                                         Icon(
                                           Icons.add,
-                                          color: deleteLocalActionContext
+                                          color: deleteActionContext
                                               .theme.colorScheme.tertiary,
                                         ),
                                         const SizedBox(
@@ -256,15 +256,14 @@ class _ActionPageState extends State<ActionPage> {
                                         ),
                                         Text(
                                           'Add resource',
-                                          style: deleteLocalActionContext
+                                          style: deleteActionContext
                                               .theme.textTheme.bodyMedium
                                               ?.copyWith(
                                                   fontWeight: FontWeight.bold,
-                                                  color:
-                                                      deleteLocalActionContext
-                                                          .theme
-                                                          .colorScheme
-                                                          .tertiary),
+                                                  color: deleteActionContext
+                                                      .theme
+                                                      .colorScheme
+                                                      .tertiary),
                                         )
                                       ],
                                     ),
@@ -296,7 +295,7 @@ class _ActionPageState extends State<ActionPage> {
                                       onRetry: () {
                                         context
                                             .read<DeleteActionResourceCubit>()
-                                            .deleteResource(widget.actionId);
+                                            .deleteResource(state.resourceId);
                                         context.pop();
                                       });
                                   break;
@@ -310,8 +309,8 @@ class _ActionPageState extends State<ActionPage> {
                                     height: 16,
                                   ),
                                   itemBuilder: (context, index) {
-                                    final resource = getLocalActionState
-                                        .action.resource![index];
+                                    final resource =
+                                        getActionState.action.resource![index];
                                     return ActionResourceWidget(
                                       resource: resource,
                                       onEditResource: () async {
@@ -339,9 +338,9 @@ class _ActionPageState extends State<ActionPage> {
                                       },
                                     );
                                   },
-                                  itemCount: getLocalActionState
-                                          .action.resource?.length ??
-                                      0,
+                                  itemCount:
+                                      getActionState.action.resource?.length ??
+                                          0,
                                 ),
                               );
                             },
@@ -354,7 +353,7 @@ class _ActionPageState extends State<ActionPage> {
               );
             case GetActionError():
               return ErrorPage(
-                onRetry: () => getLocalActionContext
+                onRetry: () => getActionContext
                     .read<GetActionCubit>()
                     .getAction(widget.actionId),
               );

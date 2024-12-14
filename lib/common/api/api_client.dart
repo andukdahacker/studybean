@@ -11,8 +11,8 @@ class APIClient {
   final Client _client;
 
   // final String _apiUrl = 'https://api.studybean.io';
-  final String _apiUrl = 'https://studybeanserver-production.up.railway.app/api/v1';
-  // final String _apiUrl = 'http://10.0.2.2:3000/api/v1';
+  // final String _apiUrl = 'https://studybeanserver-production.up.railway.app/api/v1';
+  final String _apiUrl = 'http://10.0.2.2:3000/api/v1';
 
   APIClient(this._client);
 
@@ -22,11 +22,14 @@ class APIClient {
         '$_apiUrl$path${constructedQuery.isNotEmpty ? '?$constructedQuery' : ''}');
   }
 
-  Future<CommonResponse> call(HttpMethod method,
-      {String? path,
-      Map<String, dynamic>? body,
-      Map<String, String>? headers,
-      Map<String, dynamic>? query}) async {
+  Future<CommonResponse> call(
+    HttpMethod method, {
+    String? path,
+    Map<String, dynamic>? body,
+    Map<String, String>? headers,
+    Map<String, dynamic>? query,
+    Iterable<MultipartFile>? files,
+  }) async {
     try {
       late final Response response;
 
@@ -47,6 +50,20 @@ class APIClient {
               .timeout(const Duration(seconds: 30));
           break;
         case HttpMethod.POST:
+          if (files != null) {
+            final request = MultipartRequest(
+                'POST', Uri.parse(constructUri(path, query: query).toString()))
+              ..files.addAll(files)
+              ..fields.addAll(body as Map<String, String>);
+
+            final streamedResponse = await _client
+                .send(request)
+                .timeout(const Duration(seconds: 30));
+
+            response = await Response.fromStream(streamedResponse);
+            break;
+          }
+
           response = await _client
               .post(constructUri(path, query: query),
                   body: encodedBody, headers: headers)
