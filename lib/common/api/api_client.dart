@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:studybean/common/exceptions/http_exception.dart';
 import 'package:studybean/common/logging/logger.dart';
@@ -10,7 +11,6 @@ import '../models/common_response.dart';
 class APIClient {
   final Client _client;
 
-  // final String _apiUrl = 'https://api.studybean.io';
   // final String _apiUrl = 'https://studybeanserver-production.up.railway.app/api/v1';
   final String _apiUrl = 'http://10.0.2.2:3000/api/v1';
 
@@ -20,6 +20,12 @@ class APIClient {
     final constructedQuery = Uri(queryParameters: query).query;
     return Uri.parse(
         '$_apiUrl$path${constructedQuery.isNotEmpty ? '?$constructedQuery' : ''}');
+  }
+
+  Future<Uint8List> download(String url) async {
+    final response = await _client.get(Uri.parse(url));
+
+    return response.bodyBytes;
   }
 
   Future<CommonResponse> call(

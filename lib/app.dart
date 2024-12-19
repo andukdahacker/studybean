@@ -153,7 +153,7 @@ class MyApp extends StatelessWidget {
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             checkColor: WidgetStatePropertyAll(Colors.white),
           ),
-          chipTheme: ChipThemeData(),
+          chipTheme: const ChipThemeData(),
         ),
       ),
     );

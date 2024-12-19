@@ -263,7 +263,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              final currentPath = context.currentPath;
+                              final currentPath = context.location;
 
                               if (currentPath.pathSegments
                                   .contains('firstTime')) {

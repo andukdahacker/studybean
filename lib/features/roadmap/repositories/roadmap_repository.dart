@@ -1,6 +1,7 @@
-import 'package:flutter/cupertino.dart';
-import 'package:http_interceptor/http/http_methods.dart';
+import 'dart:io';
+
 import 'package:http_interceptor/http_interceptor.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:studybean/features/roadmap/models/create_action_input.dart';
 import 'package:studybean/features/roadmap/models/create_roadmap_input.dart';
 import 'package:studybean/features/roadmap/models/edit_action_resource_input.dart';
@@ -20,6 +21,24 @@ class RoadmapRepository {
   final APIClient _client;
 
   RoadmapRepository(this._client);
+  
+  Future<String> downloadFile(String url, String resourceId) async {
+    final tempFilePath = await getTemporaryDirectory();
+
+    final file = File('${tempFilePath.path}/$resourceId.pdf');
+
+    final alreadyExist = await file.exists();
+
+    if(alreadyExist) {
+      return file.path;
+    }
+
+    final bytes = await _client.download(url);
+
+    await file.writeAsBytes(bytes);
+
+    return file.path;
+  }
 
   Future<ActionResource> uploadResourceFile(
       CreateActionResourceInput input, String filePath, String fileName) async {
@@ -31,7 +50,8 @@ class RoadmapRepository {
         'fileName': fileName,
         'title': input.title,
         'description': input.description ?? '',
-        'actionId': input.actionId
+        'actionId': input.actionId,
+        'resourceType': input.resourceType.value
       },
     );
 

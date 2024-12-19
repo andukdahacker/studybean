@@ -59,24 +59,22 @@ class Roadmap {
 
   String toRawJson() => json.encode(toJson());
 
-  factory Roadmap.fromJson(Map<String, dynamic> json) =>
-      Roadmap(
+  factory Roadmap.fromJson(Map<String, dynamic> json) => Roadmap(
         id: json["id"],
         subjectId: json["subjectId"],
         subject:
-        json["subject"] == null ? null : Subject.fromJson(json["subject"]),
+            json["subject"] == null ? null : Subject.fromJson(json["subject"]),
         milestones: json["milestone"] == null
             ? []
             : List<Milestone>.from(
-            json["milestone"]!.map((x) => Milestone.fromJson(x))),
+                json["milestone"]!.map((x) => Milestone.fromJson(x))),
         userId: json["userId"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
         goal: json["goal"],
       );
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         "id": id,
         "subjectId": subjectId,
         "goal": goal,
@@ -89,15 +87,14 @@ class Roadmap {
         "updatedAt": updatedAt.toIso8601String(),
       };
 
-  Map<String, String> toMap() =>
-      {
+  Map<String, String> toMap() => {
         'id': id,
         'subjectId': subjectId,
         'goal': goal,
         'userId': userId ?? '',
         'subject': subject?.toMap().toString() ?? '',
-        'milestone': milestones?.map((milestone) => milestone.toMap())
-            .toString() ?? '',
+        'milestone':
+            milestones?.map((milestone) => milestone.toMap()).toString() ?? '',
         'createdAt': createdAt.toIso8601String(),
         'updatedAt': updatedAt.toIso8601String(),
       };
@@ -166,11 +163,7 @@ class Milestone {
     final weekNum = remainDaysAfterMonth ~/ 7;
     final remainDaysAfterWeek = remainDaysAfterMonth % 7;
 
-    return '${yearNum > 0 ? '$yearNum years' : ''} ${monthNum > 0
-        ? '$monthNum months'
-        : ''} ${weekNum > 0 ? '$weekNum weeks' : ''} ${remainDaysAfterWeek > 0
-        ? '$remainDaysAfterWeek days'
-        : ''}';
+    return '${yearNum > 0 ? '$yearNum years' : ''} ${monthNum > 0 ? '$monthNum months' : ''} ${weekNum > 0 ? '$weekNum weeks' : ''} ${remainDaysAfterWeek > 0 ? '$remainDaysAfterWeek days' : ''}';
   }
 
   Milestone({
@@ -201,20 +194,18 @@ class Milestone {
 
   String toRawJson() => json.encode(toJson());
 
-  factory Milestone.fromJson(Map<String, dynamic> json) =>
-      Milestone(
+  factory Milestone.fromJson(Map<String, dynamic> json) => Milestone(
         id: json['id'],
         index: json['index'] ?? json['position'],
         name: json["name"],
         actions: json["action"] == null
             ? []
             : List<MilestoneAction>.from(
-            json["action"]!.map((x) => MilestoneAction.fromJson(x))),
+                json["action"]!.map((x) => MilestoneAction.fromJson(x))),
         roadmapId: json["roadmapId"],
       );
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         "id": id,
         "index": index,
         "name": name,
@@ -224,8 +215,7 @@ class Milestone {
         "roadmapId": roadmapId,
       };
 
-  Map<String, String> toMap() =>
-      {
+  Map<String, String> toMap() => {
         'id': id,
         'index': index.toString(),
         'name': name,
@@ -304,17 +294,16 @@ class MilestoneAction {
       resource: json["resource"] == null
           ? []
           : List<ActionResource>.from(
-          json["resource"]!.map((x) => ActionResource.fromJson(x))),
+              json["resource"]!.map((x) => ActionResource.fromJson(x))),
       deadline:
-      json["deadline"] == null ? null : DateTime.parse(json["deadline"]),
+          json["deadline"] == null ? null : DateTime.parse(json["deadline"]),
       completed: completed,
       duration: json["duration"],
       durationUnit: DurationUnit.fromValue(json["durationUnit"])!,
     );
   }
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
         "milestoneId": milestoneId,
@@ -328,8 +317,7 @@ class MilestoneAction {
         "durationUnit": durationUnit.value,
       };
 
-  Map<String, String> toMap() =>
-      {
+  Map<String, String> toMap() => {
         'id': id,
         'milestoneId': milestoneId,
         'name': name,
@@ -350,6 +338,7 @@ class ActionResource {
   final String title;
   final String? description;
   final String url;
+  final ResourceType resourceType;
 
   ActionResource({
     required this.id,
@@ -357,6 +346,7 @@ class ActionResource {
     required this.actionId,
     this.description,
     required this.url,
+    required this.resourceType,
   });
 
   ActionResource copyWith({
@@ -365,6 +355,7 @@ class ActionResource {
     String? description,
     String? url,
     String? actionId,
+    ResourceType? resourceType,
   }) =>
       ActionResource(
         id: id ?? this.id,
@@ -372,6 +363,7 @@ class ActionResource {
         title: title ?? this.title,
         description: description ?? this.description,
         url: url ?? this.url,
+        resourceType: resourceType ?? this.resourceType,
       );
 
   factory ActionResource.fromRawJson(String str) =>
@@ -379,42 +371,56 @@ class ActionResource {
 
   String toRawJson() => json.encode(toJson());
 
-  factory ActionResource.fromJson(Map<String, dynamic> json) =>
-      ActionResource(
+  factory ActionResource.fromJson(Map<String, dynamic> json) => ActionResource(
         id: json["id"],
         actionId: json["actionId"],
         title: json["title"],
         description: json["description"],
         url: json["url"],
+        resourceType: ResourceType.of(json["resourceType"]),
       );
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         "id": id,
         "actionId": actionId,
         "title": title,
         "description": description,
         "url": url,
+        "resourceType": resourceType,
       };
 
-  Map<String, String> toMap() =>
-      {
+  Map<String, String> toMap() => {
         'id': id,
         'actionId': actionId,
         'title': title,
         'description': description ?? '',
         'url': url,
+        'resourceType': resourceType.value,
       };
 }
 
 enum ResourceType {
-  pdf(label: 'Select a PDF'),
-  image(label: 'Select an image'),
-  websiteLink(label: 'Paste a website link'),
-  youtubeLink(label: 'Paste a YouTube link'),
+  pdf(label: 'Select a PDF', value: 'PDF'),
+  image(
+    label: 'Select an image',
+    value: 'IMAGE',
+  ),
+  websiteLink(label: 'Paste a website link', value: 'WEBSITE'),
+  youtubeLink(label: 'Paste a YouTube link', value: 'YOUTUBE'),
   ;
 
-  const ResourceType({required this.label});
+  const ResourceType({
+    required this.label,
+    required this.value,
+  });
 
   final String label;
+  final String value;
+
+  static ResourceType of(String value) {
+    return ResourceType.values.firstWhere(
+      (e) => e.value == value,
+      orElse: () => ResourceType.websiteLink,
+    );
+  }
 }

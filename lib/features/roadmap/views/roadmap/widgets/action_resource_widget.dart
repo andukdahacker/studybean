@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studybean/common/extensions/context_dialog_extension.dart';
+import 'package:studybean/common/extensions/context_go_router_extension.dart';
 import 'package:studybean/common/extensions/context_theme.dart';
 import 'package:studybean/features/roadmap/models/roadmap.dart';
+import 'package:studybean/routes/routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ActionResourceWidget extends StatelessWidget {
   const ActionResourceWidget(
-      {super.key, required this.resource, required this.onEditResource, required this.onDeleteResource});
+      {super.key,
+      required this.resource,
+      required this.onEditResource,
+      required this.onDeleteResource});
 
   final ActionResource resource;
   final VoidCallback onEditResource;
@@ -18,7 +23,28 @@ class ActionResourceWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        launchUrl(Uri.parse(resource.url));
+        switch (resource.resourceType) {
+          case ResourceType.pdf:
+          case ResourceType.image:
+          case ResourceType.youtubeLink:
+            context.goNamed(
+              AppRoutes.resource.name,
+              pathParameters: context.pathParams
+                ..addAll(
+                  {
+                    'resourceId': resource.id,
+                  },
+                ),
+              queryParameters: {
+                'url': resource.url,
+                'resourceType': resource.resourceType.value
+              },
+            );
+            break;
+          case ResourceType.websiteLink:
+            launchUrl(Uri.parse(resource.url));
+            break;
+        }
       },
       onLongPress: () {
         showModalBottomSheet(

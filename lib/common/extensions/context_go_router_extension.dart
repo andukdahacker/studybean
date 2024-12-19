@@ -4,5 +4,10 @@ import 'package:go_router/go_router.dart';
 extension ContextGoRouterExtension on BuildContext {
   GoRouter get router => GoRouter.of(this);
 
-  Uri get currentPath => router.routerDelegate.currentConfiguration.uri;
+  Map<String, String> get queryParams => GoRouterState.of(this).uri.queryParameters;
+
+  Map<String, String> get pathParams => GoRouterState.of(this).pathParameters;
+
+  Uri get location => GoRouterState.of(this).uri;
+
 }

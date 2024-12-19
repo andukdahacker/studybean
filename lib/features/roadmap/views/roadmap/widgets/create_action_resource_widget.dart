@@ -34,8 +34,13 @@ class _CreateActionResourceWidgetState
 
   final GlobalKey _descriptionKey = GlobalKey();
 
+  final youtubeRegex =
+      RegExp(r'^.*(youtu\.be/|v/|u/\w/|embed/|watch\?v=|&v=|\?v=)([^#&?]*).*');
+
   bool isPasting = false;
   bool isValidLink = false;
+
+  ResourceType? _currentResourceType;
 
   FilePickerResult? filePickerResult;
 
@@ -63,28 +68,55 @@ class _CreateActionResourceWidgetState
   }
 
   void _createResource(BuildContext context) {
-    if (filePickerResult != null) {
-      context
-          .read<CreateActionResourceCubit>()
-          .createResourceWithFile(
-        CreateActionResourceInput(
-          title: _titleController.text,
-          description: _descriptionController.text,
-          actionId: widget.actionId,
-        ),
-        filePickerResult!,
-      );
-    } else {
-      context
-          .read<CreateActionResourceCubit>()
-          .createResource(
-        CreateActionResourceInput(
-          title: _titleController.text,
-          url: _linkController.text,
-          description: _descriptionController.text,
-          actionId: widget.actionId,
-        ),
-      );
+    switch (_currentResourceType) {
+      case null:
+        return;
+      case ResourceType.pdf:
+        if (filePickerResult != null) {
+          context.read<CreateActionResourceCubit>().createResourceWithFile(
+                CreateActionResourceInput(
+                    title: _titleController.text,
+                    description: _descriptionController.text,
+                    actionId: widget.actionId,
+                    resourceType: _currentResourceType!),
+                filePickerResult!,
+              );
+        }
+        break;
+      case ResourceType.image:
+        if (filePickerResult != null) {
+          context.read<CreateActionResourceCubit>().createResourceWithFile(
+                CreateActionResourceInput(
+                    title: _titleController.text,
+                    description: _descriptionController.text,
+                    actionId: widget.actionId,
+                    resourceType: _currentResourceType!),
+                filePickerResult!,
+              );
+        }
+        break;
+      case ResourceType.websiteLink:
+        context.read<CreateActionResourceCubit>().createResource(
+              CreateActionResourceInput(
+                  title: _titleController.text,
+                  url: _linkController.text,
+                  description: _descriptionController.text,
+                  actionId: widget.actionId,
+                  resourceType: _currentResourceType!),
+            );
+        break;
+      case ResourceType.youtubeLink:
+        final youtubeLink = _linkController.text;
+        final match = youtubeRegex.firstMatch(youtubeLink);
+        final embedded = 'https://youtube.com/embed/${match!.group(2)}?autoplay=0';
+        context.read<CreateActionResourceCubit>().createResource(
+                  CreateActionResourceInput(
+                      title: _titleController.text,
+                      url: embedded,
+                      description: _descriptionController.text,
+                      actionId: widget.actionId,
+                      resourceType: _currentResourceType!),
+                );
     }
   }
 
@@ -213,6 +245,7 @@ class _CreateActionResourceWidgetState
                                   if (result != null) {
                                     setState(() {
                                       filePickerResult = result;
+                                      _currentResourceType = type;
                                     });
                                   }
                                 };
@@ -222,6 +255,7 @@ class _CreateActionResourceWidgetState
                                 onPressed = () {
                                   setState(() {
                                     isPasting = true;
+                                    _currentResourceType = type;
                                   });
                                 };
                                 break;
@@ -231,6 +265,7 @@ class _CreateActionResourceWidgetState
                                 onPressed = () {
                                   setState(() {
                                     isPasting = true;
+                                    _currentResourceType = type;
                                   });
                                 };
                                 break;
@@ -246,6 +281,7 @@ class _CreateActionResourceWidgetState
                                   if (result != null) {
                                     setState(() {
                                       filePickerResult = result;
+                                      _currentResourceType = type;
                                     });
                                   }
                                 };
@@ -279,6 +315,7 @@ class _CreateActionResourceWidgetState
                               onTap: () {
                                 setState(() {
                                   filePickerResult = null;
+                                  _currentResourceType = null;
                                 });
                               },
                               child: Icon(
@@ -298,6 +335,25 @@ class _CreateActionResourceWidgetState
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
                                         return 'Please enter a link';
+                                      }
+
+                                      if (_currentResourceType ==
+                                          ResourceType.youtubeLink) {
+                                        final match =
+                                            youtubeRegex.firstMatch(value);
+
+                                        if (match == null) {
+                                          return 'Invalid youtube link';
+                                        }
+
+                                        if (match.group(2) == null) {
+                                          return 'Invalid youtube link';
+                                        }
+
+                                        if (match.group(2) != null &&
+                                            match.group(2)!.length != 11) {
+                                          return 'Invalid youtube link';
+                                        }
                                       }
 
                                       if (!AnyLinkPreview.isValidLink(value)) {
@@ -324,6 +380,7 @@ class _CreateActionResourceWidgetState
                                     setState(() {
                                       isPasting = false;
                                       _linkController.text = '';
+                                      _currentResourceType = null;
                                     });
                                   },
                                   child: Icon(

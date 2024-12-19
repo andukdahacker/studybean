@@ -6,7 +6,6 @@ import 'package:studybean/common/extensions/context_dialog_extension.dart';
 import 'package:studybean/common/extensions/context_theme.dart';
 import 'package:studybean/features/roadmap/models/roadmap.dart';
 
-import '../../../../common/widgets/bottom_sheet_header_widget.dart';
 import '../../../splash/error_page.dart';
 import '../../../splash/loading_page.dart';
 import 'bloc/delete_action_cubit/delete_action_cubit.dart';
@@ -17,7 +16,6 @@ import 'widgets/create_action_resource_widget.dart';
 import 'widgets/edit_action_resource_widget.dart';
 import 'widgets/edit_action_widget.dart';
 import 'widgets/action_resource_widget.dart';
-import 'package:file_picker/file_picker.dart';
 
 class ActionPage extends StatefulWidget {
   const ActionPage({super.key, required this.actionId});

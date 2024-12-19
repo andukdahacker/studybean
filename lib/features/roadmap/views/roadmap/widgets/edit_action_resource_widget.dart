@@ -61,8 +61,6 @@ class _EditActionResourceWidgetState extends State<EditActionResourceWidget> {
     super.dispose();
   }
 
-  void _editResource(BuildContext context) {}
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
