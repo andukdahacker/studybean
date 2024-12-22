@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:studybean/common/extensions/context_theme.dart';
 
 class BottomSheetHeaderWidget extends StatelessWidget {
-  const BottomSheetHeaderWidget({super.key, this.title, this.action});
+  const BottomSheetHeaderWidget({super.key, this.title, this.action, this.onClose});
 
   final String? title;
   final Widget? action;
+  final VoidCallback? onClose;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,7 @@ class BottomSheetHeaderWidget extends StatelessWidget {
             Align(
               alignment: Alignment.centerLeft,
               child: GestureDetector(
-                onTap: () => Navigator.pop(context),
+                onTap: onClose ?? () => Navigator.pop(context),
                 child: const Icon(Icons.close),
               ),
             ),

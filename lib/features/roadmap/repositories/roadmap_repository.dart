@@ -21,7 +21,22 @@ class RoadmapRepository {
   final APIClient _client;
 
   RoadmapRepository(this._client);
-  
+
+  Future<ActionResource> getResource(String id) async {
+    final response = await _client.call(HttpMethod.GET, path: '/roadmaps/resource/$id');
+
+    return ActionResource.fromJson(response.data!);
+  }
+
+  Future<ActionResource> updateResourceNotes(
+      String resourceId, String notes) async {
+    final response = await _client.call(HttpMethod.PUT,
+        path: '/roadmaps/resource/notes',
+        body: {'resourceId': resourceId, 'notes': notes});
+
+    return ActionResource.fromJson(response.data!);
+  }
+
   Future<String> downloadFile(String url, String resourceId) async {
     final tempFilePath = await getTemporaryDirectory();
 
@@ -29,7 +44,7 @@ class RoadmapRepository {
 
     final alreadyExist = await file.exists();
 
-    if(alreadyExist) {
+    if (alreadyExist) {
       return file.path;
     }
 

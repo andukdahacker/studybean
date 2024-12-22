@@ -144,7 +144,7 @@ class MyApp extends StatelessWidget {
           bottomAppBarTheme: const BottomAppBarTheme(
             color: Colors.red,
           ),
-          shadowColor: Colors.grey.withOpacity(0.1),
+          shadowColor: Colors.grey.withAlpha((255.0 * 0.1).round()),
           checkboxTheme: const CheckboxThemeData(
             shape: CircleBorder(),
             visualDensity: VisualDensity(

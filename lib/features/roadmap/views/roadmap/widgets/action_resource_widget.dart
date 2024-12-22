@@ -6,7 +6,6 @@ import 'package:studybean/common/extensions/context_go_router_extension.dart';
 import 'package:studybean/common/extensions/context_theme.dart';
 import 'package:studybean/features/roadmap/models/roadmap.dart';
 import 'package:studybean/routes/routes.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ActionResourceWidget extends StatelessWidget {
   const ActionResourceWidget(
@@ -27,6 +26,7 @@ class ActionResourceWidget extends StatelessWidget {
           case ResourceType.pdf:
           case ResourceType.image:
           case ResourceType.youtubeLink:
+          case ResourceType.websiteLink:
             context.goNamed(
               AppRoutes.resource.name,
               pathParameters: context.pathParams
@@ -35,14 +35,7 @@ class ActionResourceWidget extends StatelessWidget {
                     'resourceId': resource.id,
                   },
                 ),
-              queryParameters: {
-                'url': resource.url,
-                'resourceType': resource.resourceType.value
-              },
             );
-            break;
-          case ResourceType.websiteLink:
-            launchUrl(Uri.parse(resource.url));
             break;
         }
       },

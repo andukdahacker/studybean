@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studybean/features/auth/forgot_password/views/forgot_password_page.dart';
 import 'package:studybean/features/home/views/local_home_page.dart';
-import 'package:studybean/features/roadmap/models/roadmap.dart';
 import 'package:studybean/features/roadmap/views/roadmap/action_local_page.dart';
 import 'package:studybean/features/roadmap/views/roadmap/milestone_page.dart';
 import 'package:studybean/features/roadmap/views/roadmap/resource_page.dart';
@@ -175,18 +174,10 @@ final router = GoRouter(
                               path: 'resource/:resourceId',
                               name: AppRoutes.resource.name,
                               builder: (context, state) {
-                                final resourceTypeValue = state
-                                    .uri.queryParameters['resourceType'] as String;
-                                final resourceType = ResourceType.of(resourceTypeValue);
-                                final url =
-                                    state.uri.queryParameters['url'] as String;
-                                final resourceId = state
-                                    .pathParameters['resourceId'] as String;
+                                final resourceId = state.pathParameters['resourceId'] as String;
 
                                 return ResourcePage(
-                                  url: url,
                                   resourceId: resourceId,
-                                  resourceType: resourceType,
                                 );
                               })
                         ],

@@ -339,6 +339,9 @@ class ActionResource {
   final String? description;
   final String url;
   final ResourceType resourceType;
+  final String? notes;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   ActionResource({
     required this.id,
@@ -347,6 +350,9 @@ class ActionResource {
     this.description,
     required this.url,
     required this.resourceType,
+    required this.notes,
+    this.createdAt,
+    this.updatedAt
   });
 
   ActionResource copyWith({
@@ -355,7 +361,10 @@ class ActionResource {
     String? description,
     String? url,
     String? actionId,
+    String? notes,
     ResourceType? resourceType,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) =>
       ActionResource(
         id: id ?? this.id,
@@ -364,6 +373,9 @@ class ActionResource {
         description: description ?? this.description,
         url: url ?? this.url,
         resourceType: resourceType ?? this.resourceType,
+        notes: notes ?? this.notes,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
       );
 
   factory ActionResource.fromRawJson(String str) =>
@@ -378,6 +390,7 @@ class ActionResource {
         description: json["description"],
         url: json["url"],
         resourceType: ResourceType.of(json["resourceType"]),
+        notes: json['notes'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -387,6 +400,7 @@ class ActionResource {
         "description": description,
         "url": url,
         "resourceType": resourceType,
+        'notes': notes,
       };
 
   Map<String, String> toMap() => {
@@ -396,6 +410,7 @@ class ActionResource {
         'description': description ?? '',
         'url': url,
         'resourceType': resourceType.value,
+        'notes': notes ?? '',
       };
 }
 

@@ -45,7 +45,10 @@ import 'package:studybean/features/roadmap/views/roadmap/bloc/get_roadmap_cubit/
 import 'package:studybean/features/roadmap/views/roadmap/bloc/get_roadmap_cubit/get_roadmap_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/mark_action_complete_cubit/mark_action_complete_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/bloc/mark_action_complete_cubit/mark_local_action_complete_cubit.dart';
-import 'package:studybean/features/roadmap/views/roadmap/bloc/resource_cubit/resource_cubit.dart';
+import 'package:studybean/features/roadmap/views/roadmap/bloc/note_cubit/parse_note/parse_note_cubit.dart';
+import 'package:studybean/features/roadmap/views/roadmap/bloc/note_cubit/save_note/save_note_cubit.dart';
+import 'package:studybean/features/roadmap/views/roadmap/bloc/resource_cubit/download_pdf_file/download_pdf_file_cubit.dart';
+import 'package:studybean/features/roadmap/views/roadmap/bloc/resource_cubit/get_resource/get_resource_cubit.dart';
 
 import '../../features/auth/sign_in/bloc/sign_in_cubit.dart';
 import '../../features/roadmap/views/create_roadmap/bloc/create_roadmap_cubit/create_roadmap_cubit.dart';
@@ -251,5 +254,11 @@ Future<void> initGetIt() async {
   getIt.registerFactory<DeleteLocalRoadmapCubit>(
       () => DeleteLocalRoadmapCubit(getIt<RoadmapLocalRepository>()));
 
-  getIt.registerFactory<ResourceCubit>(() => ResourceCubit(getIt<RoadmapRepository>()));
+  getIt.registerFactory<DownloadPdfFileCubit>(() => DownloadPdfFileCubit(getIt<RoadmapRepository>()));
+
+  getIt.registerFactory<SaveNoteCubit>(() => SaveNoteCubit(getIt<RoadmapRepository>()));
+
+  getIt.registerFactory<ParseNoteCubit>(() => ParseNoteCubit());
+
+  getIt.registerFactory<GetResourceCubit>(() => GetResourceCubit(getIt<RoadmapRepository>()));
 }

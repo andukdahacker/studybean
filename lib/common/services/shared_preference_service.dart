@@ -49,4 +49,12 @@ class SharedPreferenceService {
   String getToken() {
     return pref.getString('token') ?? '';
   }
+
+  Future<void> saveNote(String note, String resourceId) async {
+    await pref.setString(resourceId, note);
+  }
+
+  String? getNote(String resourceId) {
+    return pref.getString(resourceId);
+  }
 }
