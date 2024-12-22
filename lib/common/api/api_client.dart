@@ -11,8 +11,8 @@ import '../models/common_response.dart';
 class APIClient {
   final Client _client;
 
-  // final String _apiUrl = 'https://studybeanserver-production.up.railway.app/api/v1';
-  final String _apiUrl = 'http://10.0.2.2:3000/api/v1';
+  final String _apiUrl = 'https://studybeanserver-production.up.railway.app/api/v1';
+  // final String _apiUrl = 'http://10.0.2.2:3000/api/v1';
 
   APIClient(this._client);
 
