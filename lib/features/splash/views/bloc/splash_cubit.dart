@@ -19,7 +19,7 @@ class SplashCubit extends Cubit<SplashState> {
 
   Future<void> init() async {
     try {
-      await Future.delayed(const Duration(milliseconds: 2000));
+      // await Future.delayed(const Duration(milliseconds: 2000));
       final authUser = await _authLocalRepository.getUser();
       if (authUser != null) {
         emit(SplashLoaded());

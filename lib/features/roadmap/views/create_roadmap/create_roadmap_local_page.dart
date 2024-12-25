@@ -25,7 +25,7 @@ class CreateRoadmapLocalPage extends StatefulWidget {
 
 class _CreateRoadmapLocalPageState extends State<CreateRoadmapLocalPage> {
   late PageController _pageController;
-  double _progress = 1 / 3;
+  late double _progress = widget.isFirstTime ? 1 / 2 : 1 / 3;
 
   String? subjectName;
   String? _goal;
@@ -44,152 +44,80 @@ class _CreateRoadmapLocalPageState extends State<CreateRoadmapLocalPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          'Create Roadmap',
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
-        ),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            LinearProgressIndicator(
-              value: _progress,
-              backgroundColor: context.theme.colorScheme.surface,
-            ),
-            Expanded(
-              child: PageView(
-                controller: _pageController,
-                physics: const NeverScrollableScrollPhysics(),
-                onPageChanged: (index) {
-                  setState(() {
-                    _progress = (index + 1) / 3.0;
-                  });
-                },
-                children: [
-                  ChooseSubjectWidget(
-                    selectedSubjectName: subjectName,
-                    onNext: (subject) {
-                      setState(() {
-                        subjectName = subject;
-                      });
-                      _pageController.nextPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
-                    },
-                  ),
-                  DescribeGoalsWidget(
-                    subjectName: subjectName,
-                    onNext: () {
-                      _pageController.nextPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
-                    },
-                    onBack: () {
-                      _pageController.previousPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
-                    },
-                    onGoalChanged: (goal) {
-                      setState(() {
-                        _goal = goal;
-                      });
-                    },
-                    goal: _goal,
-                  ),
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: (context) => getIt<CreateLocalRoadmapCubit>(),
-                      ),
-                      BlocProvider(
-                        create: (context) =>
-                            getIt<CreateLocalRoadmapWithAiCubit>(),
-                      ),
-                      BlocProvider(
-                        create: (context) => getIt<CheckLocalUserCreditCubit>()
-                          ..checkUserCredit(),
-                      )
-                    ],
-                    child: Builder(builder: (context) {
-                      return MultiBlocListener(
-                        listeners: [
-                          BlocListener<CreateLocalRoadmapWithAiCubit,
-                              CreateLocalRoadmapWithAiState>(
-                            listener: (context, state) {
-                              switch (state) {
-                                case CreateLocalRoadmapWithAiInitial():
-                                  break;
-                                case CreateLocalRoadmapWithAiLoading():
-                                  context.showLoading();
-                                  break;
-                                case CreateLocalRoadmapWithAiSuccess():
-                                  context.pop();
-                                  if (widget.isFirstTime) {
-                                    context.go('/local/home');
-                                  } else {
-                                    context.pop();
-                                  }
-                                  break;
-                                case CreateLocalRoadmapWithAiError():
-                                  context.pop();
-                                  context.showErrorDialog(
-                                    title: 'Failed to create roadmap',
-                                    message: 'Please try again later',
-                                  );
-                                  break;
-                              }
+    return BlocProvider(
+      create: (context) => getIt<CreateLocalRoadmapCubit>(),
+      lazy: false,
+      child: Builder(
+        builder: (context) {
+          return BlocListener<CreateLocalRoadmapCubit, CreateLocalRoadmapState>(
+            listener: (context, state) {
+              switch (state) {
+                case CreateLocalRoadmapInitial():
+                  break;
+                case CreateLocalRoadmapLoading():
+                  break;
+                case CreateLocalRoadmapSuccess():
+                  if (widget.isFirstTime) {
+                    context.goNamed('localHome', queryParameters: {
+                      'isFirstTime': 'true'
+                    });
+                  } else {
+                    context.pop();
+                  }
+                  break;
+                case CreateLocalRoadmapError():
+                  context.showErrorDialog(
+                    title: 'Failed to create roadmap',
+                    message: 'Please try again later',
+                  );
+                  break;
+              }
+            },
+            child: Scaffold(
+              appBar: AppBar(
+                centerTitle: true,
+                title: Text(
+                  'Create Roadmap',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ),
+              body: SafeArea(
+                child: Column(
+                  children: [
+                    LinearProgressIndicator(
+                      value: _progress,
+                      backgroundColor: context.theme.colorScheme.surface,
+                    ),
+                    Expanded(
+                      child: PageView(
+                        controller: _pageController,
+                        physics: const NeverScrollableScrollPhysics(),
+                        onPageChanged: (index) {
+                          setState(() {
+                            _progress =
+                                (index + 1) / (widget.isFirstTime ? 2.0 : 3.0);
+                          });
+                        },
+                        children: [
+                          ChooseSubjectWidget(
+                            selectedSubjectName: subjectName,
+                            onNext: (subject) {
+                              setState(() {
+                                subjectName = subject;
+                              });
+                              _pageController.nextPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
                             },
                           ),
-                          BlocListener<CreateLocalRoadmapCubit,
-                              CreateLocalRoadmapState>(
-                            listener: (context, state) {
-                              switch (state) {
-                                case CreateLocalRoadmapInitial():
-                                  break;
-                                case CreateLocalRoadmapLoading():
-                                  break;
-                                case CreateLocalRoadmapSuccess():
-                                  if (widget.isFirstTime) {
-                                    context.go('/local/home');
-                                  } else {
-                                    context.pop();
-                                  }
-                                  break;
-                                case CreateLocalRoadmapError():
-                                  context.showErrorDialog(
-                                    title: 'Failed to create roadmap',
-                                    message: 'Please try again later',
-                                  );
-                                  break;
-                              }
-                            },
-                          ),
-                        ],
-                        child: BlocBuilder<CheckLocalUserCreditCubit,
-                            CheckLocalUserCreditState>(
-                          builder: (context, state) {
-                            return ChooseCreateRoadmapMethodWidget(
-                              credits: (state is CheckLocalUserCreditSuccess)
-                                  ? state.totalCredits
-                                  : 0,
-                              goal: _goal,
-                              subjectName: subjectName,
-                              onBack: () {
-                                _pageController.previousPage(
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeInOut,
-                                );
-                              },
-                              onCreateRoadmapManually: () {
+                          DescribeGoalsWidget(
+                            subjectName: subjectName,
+                            onNext: () {
+                              if (widget.isFirstTime) {
                                 context
                                     .read<CreateLocalRoadmapCubit>()
                                     .createLocalRoadmap(
@@ -198,28 +126,122 @@ class _CreateRoadmapLocalPageState extends State<CreateRoadmapLocalPage> {
                                         goal: _goal ?? '',
                                       ),
                                     );
-                              },
-                              onCreateRoadmapWithAI: () {
-                                context
-                                    .read<CreateLocalRoadmapWithAiCubit>()
-                                    .createLocalRoadmapWithAI(
-                                      GenerateMilestoneWithAiInput(
-                                        subjectName: subjectName ?? '',
-                                        goal: _goal ?? '',
-                                      ),
-                                    );
-                              },
-                            );
-                          },
-                        ),
-                      );
-                    }),
-                  ),
-                ],
+                              } else {
+                                _pageController.nextPage(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                );
+                              }
+                            },
+                            onBack: () {
+                              _pageController.previousPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                            onGoalChanged: (goal) {
+                              setState(() {
+                                _goal = goal;
+                              });
+                            },
+                            goal: _goal,
+                          ),
+                          if (!widget.isFirstTime)
+                            MultiBlocProvider(
+                              providers: [
+                                BlocProvider(
+                                  create: (context) =>
+                                      getIt<CreateLocalRoadmapWithAiCubit>(),
+                                ),
+                                BlocProvider(
+                                  create: (context) =>
+                                      getIt<CheckLocalUserCreditCubit>()
+                                        ..checkUserCredit(),
+                                )
+                              ],
+                              child: Builder(builder: (context) {
+                                return MultiBlocListener(
+                                  listeners: [
+                                    BlocListener<CreateLocalRoadmapWithAiCubit,
+                                        CreateLocalRoadmapWithAiState>(
+                                      listener: (context, state) {
+                                        switch (state) {
+                                          case CreateLocalRoadmapWithAiInitial():
+                                            break;
+                                          case CreateLocalRoadmapWithAiLoading():
+                                            context.showLoading();
+                                            break;
+                                          case CreateLocalRoadmapWithAiSuccess():
+                                            context.pop();
+                                            if (widget.isFirstTime) {
+                                              context.go('/local/home');
+                                            } else {
+                                              context.pop();
+                                            }
+                                            break;
+                                          case CreateLocalRoadmapWithAiError():
+                                            context.pop();
+                                            context.showErrorDialog(
+                                              title: 'Failed to create roadmap',
+                                              message: 'Please try again later',
+                                            );
+                                            break;
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                  child: BlocBuilder<CheckLocalUserCreditCubit,
+                                      CheckLocalUserCreditState>(
+                                    builder: (context, state) {
+                                      return ChooseCreateRoadmapMethodWidget(
+                                        credits:
+                                            (state is CheckLocalUserCreditSuccess)
+                                                ? state.totalCredits
+                                                : 0,
+                                        goal: _goal,
+                                        subjectName: subjectName,
+                                        onBack: () {
+                                          _pageController.previousPage(
+                                            duration:
+                                                const Duration(milliseconds: 300),
+                                            curve: Curves.easeInOut,
+                                          );
+                                        },
+                                        onCreateRoadmapManually: () {
+                                          context
+                                              .read<CreateLocalRoadmapCubit>()
+                                              .createLocalRoadmap(
+                                                CreateLocalRoadmapInput(
+                                                  subject: subjectName ?? '',
+                                                  goal: _goal ?? '',
+                                                ),
+                                              );
+                                        },
+                                        onCreateRoadmapWithAI: () {
+                                          context
+                                              .read<CreateLocalRoadmapWithAiCubit>()
+                                              .createLocalRoadmapWithAI(
+                                                GenerateMilestoneWithAiInput(
+                                                  subjectName: subjectName ?? '',
+                                                  goal: _goal ?? '',
+                                                ),
+                                              );
+                                        },
+                                      );
+                                    },
+                                  ),
+                                );
+                              }),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
+          );
+        }
       ),
     );
   }

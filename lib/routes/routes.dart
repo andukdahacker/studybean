@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:studybean/common/di/get_it.dart';
 import 'package:studybean/features/auth/forgot_password/views/forgot_password_page.dart';
 import 'package:studybean/features/home/views/local_home_page.dart';
+import 'package:studybean/features/roadmap/views/create_roadmap/bloc/create_local_roadmap_cubit/create_local_roadmap_with_ai_cubit.dart';
 import 'package:studybean/features/roadmap/views/roadmap/action_local_page.dart';
 import 'package:studybean/features/roadmap/views/roadmap/milestone_page.dart';
 import 'package:studybean/features/roadmap/views/roadmap/resource_page.dart';
@@ -108,7 +110,17 @@ final router = GoRouter(
     ),
     GoRoute(
       path: '/local/home',
-      builder: (context, state) => const LocalHomePage(),
+      name: 'localHome',
+      builder: (context, state) {
+        final isFirstTime =
+            state.uri.queryParameters['isFirstTime'] == 'true' ? true : false;
+        return BlocProvider(
+          create: (context) => getIt<CreateLocalRoadmapWithAiCubit>(),
+          child: LocalHomePage(
+            isFirstTime: isFirstTime,
+          ),
+        );
+      },
       routes: [
         GoRoute(
           path: 'createRoadmap',
@@ -174,7 +186,8 @@ final router = GoRouter(
                               path: 'resource/:resourceId',
                               name: AppRoutes.resource.name,
                               builder: (context, state) {
-                                final resourceId = state.pathParameters['resourceId'] as String;
+                                final resourceId = state
+                                    .pathParameters['resourceId'] as String;
 
                                 return ResourcePage(
                                   resourceId: resourceId,

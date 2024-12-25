@@ -24,6 +24,37 @@ class CreateLocalRoadmapWithAiCubit
   final RoadmapLocalRepository _roadmapLocalRepository;
   final SharedPreferenceService _sharedPreferenceService;
 
+  Future<void> createWithFirstRoadmap() async {
+    try {
+      emit(CreateLocalRoadmapWithAiLoading());
+      final roadmaps = await _roadmapLocalRepository.getRoadmaps();
+      final firstRoadmap = roadmaps.first;
+
+      final generatedMilestones =
+          await _roadmapRepository.generateMilestoneWithAI(
+        GenerateMilestoneWithAiInput(
+          subjectName: firstRoadmap.subject?.name ?? '',
+          goal: firstRoadmap.goal,
+        ),
+      );
+
+      await _roadmapLocalRepository.deleteAllRoadmap();
+
+      final roadmap = await _roadmapLocalRepository.createRoadmapWithAi(
+          generatedMilestones,
+          CreateLocalRoadmapInput(
+              subject: firstRoadmap.subject?.name ?? '',
+              goal: firstRoadmap.goal));
+
+      await _sharedPreferenceService.decrementCredits();
+
+      emit(CreateLocalRoadmapWithAiSuccess(roadmap: roadmap));
+    } catch (e, stackTrace) {
+      addError(e, stackTrace);
+      emit(CreateLocalRoadmapWithAiError(e));
+    }
+  }
+
   Future<void> createLocalRoadmapWithAI(
       GenerateMilestoneWithAiInput input) async {
     try {
@@ -39,9 +70,8 @@ class CreateLocalRoadmapWithAiCubit
       await _sharedPreferenceService.decrementCredits();
       emit(CreateLocalRoadmapWithAiSuccess(roadmap: roadmap));
     } catch (e, stackTrace) {
-      log(e.toString(), stackTrace: stackTrace);
       addError(e, stackTrace);
-      emit(CreateLocalRoadmapWithAiError());
+      emit(CreateLocalRoadmapWithAiError(e));
     }
   }
 }

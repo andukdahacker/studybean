@@ -26,6 +26,9 @@ class CreateLocalRoadmapWithAiSuccess
 
 class CreateLocalRoadmapWithAiError
     extends CreateLocalRoadmapWithAiState {
+  final Object error;
+
+  CreateLocalRoadmapWithAiError(this.error);
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [error];
 }
